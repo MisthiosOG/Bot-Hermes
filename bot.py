@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Telegram bot: notifikasi order + bukti TF + approve/delete + kirim kredensial ke buyer."""
 import os, sys, json, time, asyncio
+import nest_asyncio
+nest_asyncio.apply()
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOKEN = os.environ.get("BOT_TOKEN") or "8921396573:AAEG6fWTCXylJWB1nW8pPuvHx0CfSK0dLAU"
