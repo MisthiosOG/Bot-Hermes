@@ -165,6 +165,7 @@ def admin():
 
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     # start bot in background thread
     try:
         import bot as bot_module
@@ -175,6 +176,6 @@ if __name__ == "__main__":
         print(f"Bot: skipped ({e})")
 
     print("=" * 50)
-    print("Web shop: http://localhost:5000")
+    print(f"Web shop: http://0.0.0.0:{port}")
     print("=" * 50)
-    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)

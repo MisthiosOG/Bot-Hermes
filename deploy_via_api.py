@@ -15,8 +15,8 @@ if hasattr(sys.stdout, "reconfigure"):
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from solver import MuaraicaptchaSolver
-from DrissionPage import ChromiumPage, ChromiumOptions
+# solver & DrissionPage di-import lazy (di dalam fungsi) biar Flask app gak crash
+# kalau Chrome belum siap
 
 GOMAIL = "https://mail.gopretstudio.com"
 MUARAI_KEY = "mc_live_9ba88d8f01224f7bd1b2f957731cc30f"
@@ -72,6 +72,7 @@ def get_otp(mail_token, tries=40):
 
 
 def make_browser():
+    from DrissionPage import ChromiumPage, ChromiumOptions
     co = ChromiumOptions()
     co.auto_port(True)
     co.no_js(False)
@@ -204,6 +205,7 @@ def create_order():
             print("    DID gagal")
             continue
         # solve turnstile PAS setelah dapet DID (fresh token)
+        from solver import MuaraicaptchaSolver
         solver = MuaraicaptchaSolver(api_key=MUARAI_KEY)
         ts_token = solver.solve_turnstile(website_url="https://railway.com/login", website_key=SITEKEY)
         p.run_js(f"window.__did = {json.dumps(did)};")
@@ -340,6 +342,7 @@ def get_url(project_id):
     ok = False
     for attempt in range(3):
         print(f"[1] re-login attempt {attempt+1}/3...")
+        from solver import MuaraicaptchaSolver
         solver = MuaraicaptchaSolver(api_key=MUARAI_KEY)
         ts_token = solver.solve_turnstile(website_url="https://railway.com/login", website_key=SITEKEY)
         p.get("https://railway.com/login")
