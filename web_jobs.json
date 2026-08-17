@@ -1,0 +1,300 @@
+{
+  "7b3380dedcf7": {
+    "job_id": "7b3380dedcf7",
+    "status": "ready",
+    "buyer": {
+      "name": "Test",
+      "telegram": "@test",
+      "note": ""
+    },
+    "order": {
+      "email": "u7jsprr7an9@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTUxM2ZiZS1mMTNhLTRmZTEtYTNlYS04Y2U3MDhhNTg0NWEiLCJhbGlhcyI6InU3anNwcnI3YW45QGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5MTUyNTAsImV4cCI6MTc4NzUyMDA1MH0.9-XqPHzaOuR5Wh1cex-4EO0G3UfCyVUUu4SVPsNnK0w",
+      "admin_username": "admin",
+      "admin_password": "TNsR9qgUJwcbZJQR",
+      "ssh_password": "LVmJ9HncijA4lATI",
+      "project_id": "bb1d2cdf-e606-493c-9c9d-924d9823a349",
+      "service_id": "345f593f-f46d-4e00-8130-44b65775587b",
+      "environment_id": "e89d09af-e979-4156-9c63-91628d1db68a",
+      "url": "https://hermes-gateway-production-194a.up.railway.app",
+      "created_at": "2026-08-17 04:21:48"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 04:17:56"
+  },
+  "34610f21aa30": {
+    "job_id": "34610f21aa30",
+    "status": "pending",
+    "buyer": {
+      "name": "Test",
+      "telegram": "@test",
+      "note": ""
+    },
+    "order": null,
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 04:28:14"
+  },
+  "fc1a37c2f45c": {
+    "job_id": "fc1a37c2f45c",
+    "status": "pending",
+    "buyer": {
+      "name": "Test",
+      "telegram": "@test",
+      "note": ""
+    },
+    "order": null,
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 11:33:20"
+  },
+  "1d689109bc95": {
+    "job_id": "1d689109bc95",
+    "status": "ready",
+    "buyer": {
+      "name": "powow",
+      "telegram": "dieforcringes",
+      "note": ""
+    },
+    "order": {
+      "email": "u92wytjtv17@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGYzMGYxMy05NTBkLTQxZGQtYTFiNi01NzIwM2Y0MDNjNTAiLCJhbGlhcyI6InU5Mnd5dGp0djE3QGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NDE2MjIsImV4cCI6MTc4NzU0NjQyMn0.ZzRUbIgbutu24wa5Tiz2nZmRn5DvrqNlGepmBFFKV2k",
+      "admin_username": "admin",
+      "admin_password": "09gMMhpCdqZAoeDA",
+      "ssh_password": "em64eulsr4Aewy0k",
+      "project_id": "ec59f433-993a-4c21-a812-211aef4f1bb9",
+      "service_id": "6490a976-8acd-4cd1-b045-6866af671150",
+      "environment_id": "7b414a8b-425b-4181-bef3-37fe5682ac1c",
+      "url": "https://hermes-gateway-production-eacd.up.railway.app",
+      "created_at": "2026-08-17 11:41:30"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 11:40:08"
+  },
+  "43b6fcfccf51": {
+    "job_id": "43b6fcfccf51",
+    "status": "ready",
+    "buyer": {
+      "name": "powfu nvm",
+      "telegram": "@dieforcringes"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\43b6fcfccf51.png"
+    },
+    "order": {
+      "email": "u7ffxcnncr0@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzdiMzYzYi1jM2Y4LTRiZTAtODRkYy00NmU0MGMwODg2NjIiLCJhbGlhcyI6InU3ZmZ4Y25uY3IwQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NDI0ODcsImV4cCI6MTc4NzU0NzI4N30.QHhs4teghnQ3jOOUHvdkR9c4oSrOCfKkH4iQJzTJHI8",
+      "admin_username": "admin",
+      "admin_password": "AvMyUIZrumvHNrxK",
+      "ssh_password": "dMtVZJhbDkXLZtN5",
+      "project_id": "344a8153-5219-4ddb-baf1-494eb9d4ef7f",
+      "service_id": "f346fb45-518a-4f70-a274-79a2c7999103",
+      "environment_id": "39760b6e-bfed-47a0-ac12-5f202f5193fb",
+      "url": "https://hermes-gateway-production-4129.up.railway.app",
+      "created_at": "2026-08-17 11:55:57"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 11:54:28"
+  },
+  "860f9be6d9ad": {
+    "job_id": "860f9be6d9ad",
+    "status": "deployed_no_url",
+    "buyer": {
+      "name": "oidjo",
+      "telegram": "dieforcringes"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\860f9be6d9ad.jpg"
+    },
+    "order": {
+      "email": "u8dvtvb93nb@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjMDU3ZmNkYS1jY2RlLTQ2ZTktOTdkOS03MWU5Y2ZkNWJkZWUiLCJhbGlhcyI6InU4ZHZ0dmI5M25iQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NDMyMTUsImV4cCI6MTc4NzU0ODAxNX0.B697l7YERdEGY2IWGSMM1L-3412QbUT7XrKBgAigG-M",
+      "admin_username": "admin",
+      "admin_password": "b3Fn7w3vO9zGIqK3",
+      "ssh_password": "GfBvGtle2sXPO5qR",
+      "project_id": "91ba5671-a7fb-4e99-bd08-48c46d7edbc6",
+      "service_id": "df29e810-9178-4b62-a6dc-5aab0ac544be",
+      "environment_id": "060309a6-df6d-4018-a36a-87776f6758cd",
+      "url": null,
+      "created_at": "2026-08-17 12:08:08"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 12:06:34"
+  },
+  "6c750a9ad53c": {
+    "job_id": "6c750a9ad53c",
+    "status": "deployed_no_url",
+    "buyer": {
+      "name": "kjgk",
+      "telegram": "dieforcringes"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\6c750a9ad53c.jpg"
+    },
+    "order": {
+      "email": "ulps0ee7jub@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYjZkMWJlOS1jNjZhLTRkNWYtOGEwMy1hYmZmMzYxODk3YjMiLCJhbGlhcyI6InVscHMwZWU3anViQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NDM2NTksImV4cCI6MTc4NzU0ODQ1OX0.nmO5ZoXsRMPwcDG6Ip9B5a82NyerZI9Z_O5mHgrUrME",
+      "admin_username": "admin",
+      "admin_password": "VGvvusXHXUfugXLc",
+      "ssh_password": "lWP9rYwNPQVQLRZO",
+      "project_id": "bff6a948-f2fa-4d14-af2e-e7ad0e603931",
+      "service_id": "c2df3e7d-37ff-47a7-852a-3a03575dfeaa",
+      "environment_id": "39fcec19-8436-41d8-9edc-26b8d21e02f4",
+      "url": null,
+      "created_at": "2026-08-17 12:15:46"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 12:13:35"
+  },
+  "1add6192afb6": {
+    "job_id": "1add6192afb6",
+    "status": "deployed_no_url",
+    "buyer": {
+      "name": "fss",
+      "telegram": "test"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\1add6192afb6.jpg"
+    },
+    "order": {
+      "email": "ubg7zl0mpd1@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZjMxMmM1Yi0xODQ3LTRmYjgtYjFhYi1mNTRmOTg3NTE3NzkiLCJhbGlhcyI6InViZzd6bDBtcGQxQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NDQwODUsImV4cCI6MTc4NzU0ODg4NX0.OakxKH3fXzIwBOp9Jl8xxoDqCFUnvnpfkiyQSEp9i2I",
+      "admin_username": "admin",
+      "admin_password": "CuljIqJpJcaEYhBD",
+      "ssh_password": "CcBQJsWzH77r1Xsk",
+      "project_id": "57d1e0ab-2b3f-45e1-ae1c-d39831694836",
+      "service_id": "b58935e5-61ba-4f6a-b3a4-7d6ea04a70ad",
+      "environment_id": "45c6e69d-7644-4266-9807-ffef1f5d8d1b",
+      "url": null,
+      "created_at": "2026-08-17 12:22:48"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 12:21:10"
+  },
+  "6e5a2918bd55": {
+    "job_id": "6e5a2918bd55",
+    "status": "pending",
+    "buyer": {
+      "name": "sffssadaa",
+      "telegram": "aaaa"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\6e5a2918bd55.jpg"
+    },
+    "order": null,
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 12:24:32"
+  },
+  "13b25f267ee4": {
+    "job_id": "13b25f267ee4",
+    "status": "ready",
+    "buyer": {
+      "name": "dadadaa",
+      "telegram": "test"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\13b25f267ee4.png"
+    },
+    "order": {
+      "email": "ufykundvzf2@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYTk3YWFjYi0xMDAyLTRiMjYtYThjYi1mODcxZjM2M2QwMTYiLCJhbGlhcyI6InVmeWt1bmR2emYyQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NDg2NzEsImV4cCI6MTc4NzU1MzQ3MX0.JgE4-Eiv6D-vimPzW-qgXUtglc5cwMQm3qRT1-M8rPo",
+      "admin_username": "admin",
+      "admin_password": "kkab5pbKIQXdpORw",
+      "ssh_password": "GMS7j8KInjJDBMXj",
+      "project_id": "22d9af72-9b39-4dae-9a2f-92bcd5e6d6a4",
+      "service_id": "5d250002-2b68-465f-b29a-11ac120eec94",
+      "environment_id": "bcf218bf-9d90-4c98-aebc-f4b7093238bd",
+      "url": "https://hermes-gateway-production-7543.up.railway.app",
+      "created_at": "2026-08-17 13:39:23"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 13:37:29",
+    "dm_sent": false
+  },
+  "449ac01f8be9": {
+    "job_id": "449ac01f8be9",
+    "status": "pending",
+    "buyer": {
+      "name": "hahhaha",
+      "telegram": "klhllhlj"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\449ac01f8be9.jpeg"
+    },
+    "order": null,
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 14:14:10"
+  },
+  "64e83c0a1402": {
+    "job_id": "64e83c0a1402",
+    "status": "ready",
+    "buyer": {
+      "name": "hahaha",
+      "telegram": "jpjojopo"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\64e83c0a1402.jpg"
+    },
+    "order": {
+      "email": "u6etc1e3f6b@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNDcyNGMzYy1jMmZmLTQ3MGUtODcxMy04NWU4ZDk2OTVhZDAiLCJhbGlhcyI6InU2ZXRjMWUzZjZiQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NTA5ODYsImV4cCI6MTc4NzU1NTc4Nn0.dKmH7baFQPdMpeNkA75vJ7qVwAg0oF1Q7vE3RDMh4tE",
+      "admin_username": "admin",
+      "admin_password": "L4ou5HaEzb8ag5D5",
+      "ssh_password": "o48MG50FhEdKDDSV",
+      "project_id": "c068800f-7069-4967-a18f-1e5324197fa0",
+      "service_id": "23885d51-a10a-4dc3-a7ed-5b0fa2cc9e32",
+      "environment_id": "902eb77e-e907-4a1b-92f0-3f5714c58c85",
+      "url": "https://hermes-gateway-production-b8e4.up.railway.app",
+      "created_at": "2026-08-17 14:18:31"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 14:15:46",
+    "dm_sent": false
+  },
+  "4e845c5d0672": {
+    "job_id": "4e845c5d0672",
+    "status": "ready",
+    "buyer": {
+      "name": "hhdjdaa",
+      "telegram": "watefly"
+    },
+    "payment": {
+      "gopay": "0881022218911",
+      "photo_path": "C:\\Users\\LEGION\\Documents\\OBSIDIAN\\Projects\\railway-auto\\uploads\\4e845c5d0672.jpeg"
+    },
+    "order": {
+      "email": "ueeyzvqooaa@gomal.tech",
+      "mail_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNWViNzcwYS1iNDNlLTQ0OTctYmIyYi0xYWU0NTkxYjNjNzgiLCJhbGlhcyI6InVlZXl6dnFvb2FhQGdvbWFsLnRlY2giLCJpYXQiOjE3ODY5NTE5MjIsImV4cCI6MTc4NzU1NjcyMn0.ESgul350UnidOmV2J7z6Gr-L22qLyLGb3GFsMgo2b9o",
+      "admin_username": "admin",
+      "admin_password": "55WDNtJXeNf94Jut",
+      "ssh_password": "emlOGG92dpiPVLcN",
+      "project_id": "5c51617f-65a6-41d6-bead-4ca6c84f74b9",
+      "service_id": "bf50415d-8c3d-4a94-8e3a-52f566a89dcb",
+      "environment_id": "1f9e82a4-a176-4848-866f-d179888079d8",
+      "url": "https://hermes-gateway-production-3f9e.up.railway.app",
+      "created_at": "2026-08-17 14:33:24"
+    },
+    "url": null,
+    "error": null,
+    "created_at": "2026-08-17 14:31:08",
+    "dm_sent": false
+  }
+}

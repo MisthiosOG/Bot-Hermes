@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Orders</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #0b0e14; color: #e6e9f0; padding: 24px; }
+  h1 { margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px; border-bottom: 1px solid #232a3a; }
+  th { color: #8b93a7; }
+  .status { padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+  .ready { background: #052e16; color: #22c55e; }
+  .deploying { background: #1e1b4b; color: #a5b4fc; }
+  .pending { background: #292524; color: #d6d3d1; }
+  .failed { background: #450a0a; color: #f87171; }
+  .deployed_no_url { background: #1e1b4b; color: #fbbf24; }
+  .mono { font-family: monospace; word-break: break-all; }
+  .refresh { margin-bottom: 16px; padding: 8px 16px; background: #6366f1; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Orders</h1>
+<button class="refresh" onclick="location.reload()">Refresh</button>
+<table>
+  <thead>
+    <tr><th>Waktu</th><th>Buyer</th><th>Telegram</th><th>Status</th><th>URL</th><th>Password</th></tr>
+  </thead>
+  <tbody>
+    {% for id, job in jobs.items() %}
+    <tr>
+      <td>{{ job.created_at }}</td>
+      <td>{{ job.buyer.name or '—' }}</td>
+      <td>{{ job.buyer.telegram or '—' }}</td>
+      <td><span class="status {{ job.status }}">{{ job.status }}</span></td>
+      <td class="mono">{% if job.order and job.order.url %}{{ job.order.url }}{% elif job.status == 'failed' %}{{ job.error }}{% else %}—{% endif %}</td>
+      <td class="mono">{% if job.order %}{{ job.order.admin_password }}{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>

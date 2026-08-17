@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\LEGION\Documents\OBSIDIAN\Projects\railway-auto\bot.py", line 153, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\LEGION\Documents\OBSIDIAN\Projects\railway-auto\bot.py", line 138, in main
+    app.add_handler(type("H", (object,), {"callback": cb})())  # fallback
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LEGION\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\telegram\ext\_application.py", line 1381, in add_handler
+    raise TypeError(f"handler is not an instance of {BaseHandler.__name__}")
+TypeError: handler is not an instance of BaseHandler
