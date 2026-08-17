@@ -138,7 +138,7 @@ def main():
         asyncio.create_task(poll())
     app.post_init = startup
     print("[bot] Jalan.")
-    app.run_polling()
+    app.run_polling(stop_signals=None)
 
 if __name__ == "__main__":
     main()
