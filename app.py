@@ -166,16 +166,19 @@ def admin():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    # start bot in background thread
+    # Flask jalan di background thread, bot di main thread (biar signal handler work)
+    def run_flask():
+        app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
+    t = threading.Thread(target=run_flask, daemon=True)
+    t.start()
+    print(f"Flask: http://0.0.0.0:{port}")
+
+    # start bot di MAIN thread (butuh signal handler)
     try:
         import bot as bot_module
-        t = threading.Thread(target=bot_module.main, daemon=True)
-        t.start()
-        print("Bot: started")
+        bot_module.main()
     except Exception as e:
-        print(f"Bot: skipped ({e})")
-
-    print("=" * 50)
-    print(f"Web shop: http://0.0.0.0:{port}")
-    print("=" * 50)
-    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
+        print(f"Bot error: {e}")
+        # kalau bot gagal, tetap tunggu Flask
+        while True:
+            time.sleep(60)
