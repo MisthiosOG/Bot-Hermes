@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Telegram bot: notifikasi order + bukti TF + approve/delete + kirim kredensial ke buyer."""
 import os, sys, json, time, asyncio
-import nest_asyncio
-nest_asyncio.apply()
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOKEN = os.environ.get("BOT_TOKEN") or "8921396573:AAEG6fWTCXylJWB1nW8pPuvHx0CfSK0dLAU"
@@ -128,19 +126,21 @@ async def cb(update, ctx):
     try: await update.callback_query.edit_message_reply_markup(reply_markup=None)
     except: pass
 
+async def run_bot():
+    app = Application.builder().token(TOKEN).build()
+    app.add_handler(CallbackQueryHandler(cb))
+    async def startup(app):
+        asyncio.create_task(poll())
+    app.post_init = startup
+    print("[bot] Jalan.")
+    await app.run_polling(stop_signals=None)
+
 def main():
     if "ISI_BOT" in TOKEN:
         print("[bot] Ganti BOT_TOKEN"); return
     if not ADMIN_ID:
         print("[bot] Isi ADMIN_ID"); return
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CallbackQueryHandler(cb))
-    # poll task berjalan dalam loop yang sama dengan bot
-    async def startup(app):
-        asyncio.create_task(poll())
-    app.post_init = startup
-    print("[bot] Jalan.")
-    app.run_polling(stop_signals=None)
+    asyncio.run(run_bot())
 
 if __name__ == "__main__":
     main()
