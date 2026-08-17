@@ -164,21 +164,21 @@ def admin():
     return render_template("admin.html", jobs=_jobs)
 
 
+@app.route("/health")
+def health():
+    return "ok"
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    # Flask jalan di background thread, bot di main thread (biar signal handler work)
-    def run_flask():
-        app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
-    t = threading.Thread(target=run_flask, daemon=True)
-    t.start()
-    print(f"Flask: http://0.0.0.0:{port}")
-
-    # start bot di MAIN thread (butuh signal handler)
+    # start bot di thread terpisah (gagal ga masalah)
     try:
         import bot as bot_module
-        bot_module.main()
+        t = threading.Thread(target=bot_module.main, daemon=True)
+        t.start()
+        print("Bot: started")
     except Exception as e:
-        print(f"Bot error: {e}")
-        # kalau bot gagal, tetap tunggu Flask
-        while True:
-            time.sleep(60)
+        print(f"Bot: skip ({e})")
+
+    print(f"Flask on :{port}")
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
