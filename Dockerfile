@@ -22,4 +22,4 @@ RUN mkdir -p uploads
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "run:application", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "1", "--threads", "2"]
