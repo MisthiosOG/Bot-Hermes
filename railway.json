@@ -4,8 +4,8 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "python app.py",
-    "healthcheckPath": "/health",
+    "startCommand": "gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 2 --threads 2",
+    "healthcheckPath": "/",
     "healthcheckTimeout": 120
   }
 }
