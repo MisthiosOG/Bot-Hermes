@@ -270,23 +270,27 @@ def poll_urls(p, order, tries=60, delay=20):
     return urls
 
 
-def wait_deploy(p, sid, tries=40, delay=15):
-    """Poll deployment status service sampai SUCCESS/FAILED.
-    Railway cuma bisa 1 build sekaligus, jadi deploy berikutnya harus nunggu."""
+def wait_deploy(p, sid, tries=80, delay=15):
+    """Poll deployment status service sampai SUCCESS/FAILED/CANCELLED.
+    Railway cuma bisa 1 build sekaligus di satu environment, jadi deploy berikutnya
+    WAJIB nunggu build sebelumnya selesai (gak boleh lanjut pas masih building).
+    Ambil status deployment TERBARU (edge pertama), bukan deployment lama."""
     q = """
     query service($id: String!) {
       service(id: $id) { deployments(first: 3) { edges { node { status } } } }
     }
     """
-    for _ in range(tries):
+    for i in range(tries):
         r = gql(p, q, {"id": sid})
-        m = re.search(r'"status"\s*:\s*"(\w+)"', r)
-        st = m.group(1) if m else None
+        # ambil SEMUA status, ambil yang PALING DEPAN (newest) biar gak match deployment lama.
+        # edges di Railway diurutkan newest-first.
+        statuses = re.findall(r'"status"\s*:\s*"(\w+)"', r)
+        st = statuses[0] if statuses else None
         if st == "SUCCESS":
             return True
-        if st == "FAILED":
+        if st in ("FAILED", "CANCELLED"):
             return False
-        print(f"    build {sid[:8]}: {st}")
+        print(f"    build {sid[:8]}: {st} ({i+1}/{tries})")
         time.sleep(delay)
     return False
 
@@ -436,21 +440,26 @@ def create_order():
         if '"errors"' in r:
             raise RuntimeError(f"patch {name} gagal: {r[:300]}")
         time.sleep(2)
-        # instance butuh waktu muncul setelah patch — retry deploy sampai gak "not found"
+        # instance butuh waktu muncul setelah patch — retry deploy sampai gak "not found" /
+        # "Not Authorized" (env masih di-lock build sebelumnya). Railway 1 env = 1 build sekaligus.
         r = ""
-        for d_try in range(10):
+        for d_try in range(40):
             r = gql(p, DEPLOY_MUT, {"serviceId": svid, "environmentId": eid, "latestCommit": True})
             if '"errors"' not in r:
                 break
-            if "not found" not in r.lower():
+            err = r.lower()
+            retriable = ("not found" in err or "not authorized" in err or
+                         "locked" in err or "forbidden" in err or
+                         "another build" in err or "in progress" in err)
+            if not retriable:
                 raise RuntimeError(f"deploy {name} gagal: {r[:300]}")
-            print(f"    deploy {name}: instance belum ready, retry {d_try+1}/10...")
-            time.sleep(6)
+            print(f"    deploy {name}: env locked / instance belum ready, retry {d_try+1}/40...")
+            time.sleep(15)
         print(f"    deploy {name}: {r[:150]}")
         if '"errors"' in r:
             raise RuntimeError(f"deploy {name} gagal setelah retry: {r[:300]}")
         if not wait_deploy(p, svid):
-            print(f"    warn: build {name} belum SUCCESS/gagal — lanjut")
+            raise RuntimeError(f"deploy {name}: build gagal/tidak selesai — hentikan")
 
     # buat domain publik buat tiap service
     print("[9] buat domain...")
