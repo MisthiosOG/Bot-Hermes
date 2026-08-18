@@ -4,41 +4,132 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Orders</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #0b0e14; color: #e6e9f0; padding: 24px; }
-  h1 { margin-bottom: 20px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 10px; border-bottom: 1px solid #232a3a; }
-  th { color: #8b93a7; }
-  .status { padding: 3px 10px; border-radius: 20px; font-size: 12px; }
-  .ready { background: #052e16; color: #22c55e; }
-  .deploying { background: #1e1b4b; color: #a5b4fc; }
-  .pending { background: #292524; color: #d6d3d1; }
-  .failed { background: #450a0a; color: #f87171; }
-  .deployed_no_url { background: #1e1b4b; color: #fbbf24; }
-  .mono { font-family: monospace; word-break: break-all; }
-  .refresh { margin-bottom: 16px; padding: 8px 16px; background: #6366f1; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+  :root { --bg:#070708; --fg:#e3e3e5; --fg2:#555; --border:rgba(255,255,255,.06); --accent:#34d399; --card:rgba(18,18,22,.8); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--fg); min-height:100vh;
+         background-image:radial-gradient(ellipse at 30% 20%,rgba(52,211,153,.04),transparent 50%); }
+  ::selection { background:var(--accent); color:#052e16; }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.08); border-radius:3px; }
+
+  .wrap { max-width:1200px; margin:0 auto; padding:32px 24px; }
+
+  .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+  .logo { font-weight:800; font-size:16px; display:flex; align-items:center; gap:8px; }
+  .logo .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px rgba(52,211,153,.4); }
+  .logo span { color:var(--accent); }
+  .actions { display:flex; gap:8px; align-items:center; }
+  .btn { padding:9px 18px; font-size:13px; font-weight:600; border-radius:10px; border:1px solid var(--border);
+         background:rgba(255,255,255,.04); color:#999; cursor:pointer; font-family:'Inter',sans-serif;
+         text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:all .25s; }
+  .btn:hover { color:var(--fg); border-color:var(--fg2); transform:translateY(-1px); }
+  .btn-p { background:var(--accent); color:#052e16; border:none; }
+  .btn-p:hover { color:#052e16; filter:brightness(1.1); }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1px;
+           background:var(--border); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:24px; }
+  .stat { background:var(--bg); padding:18px 20px; }
+  .stat .num { font-size:26px; font-weight:800; letter-spacing:-1px; }
+  .stat .lbl { font-size:12px; color:var(--fg2); margin-top:2px; text-transform:uppercase; letter-spacing:.5px; }
+  .stat .num.green { color:var(--accent); }
+  .stat .num.red { color:#f87171; }
+  .stat .num.yellow { color:#fbbf24; }
+
+  .table-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; min-width:900px; }
+  th { text-align:left; padding:12px 16px; color:var(--fg2); font-size:11px; font-weight:600;
+       text-transform:uppercase; letter-spacing:.8px; border-bottom:1px solid var(--border); }
+  td { padding:12px 16px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,.015); }
+  .mono { font-family:'JetBrains Mono',monospace; font-size:12px; word-break:break-all; color:var(--fg); }
+  .dim { color:var(--fg2); }
+
+  .status { padding:3px 10px; border-radius:100px; font-size:11px; font-weight:600; display:inline-block; }
+  .ready { background:rgba(52,211,153,.1); color:#34d399; }
+  .deploying, .processing { background:rgba(165,180,252,.1); color:#a5b4fc; }
+  .pending { background:rgba(255,255,255,.06); color:#d6d3d1; }
+  .failed, .cancelled { background:rgba(248,113,113,.1); color:#f87171; }
+  .deployed_no_url { background:rgba(251,191,36,.1); color:#fbbf24; }
+
+  .exp-ok { color:var(--accent); font-weight:600; }
+  .exp-warn { color:#fbbf24; font-weight:600; }
+  .exp-dead { color:#f87171; font-weight:700; }
+
+  .empty { padding:48px; text-align:center; color:var(--fg2); }
 </style>
 </head>
 <body>
-<h1>Orders</h1>
-<button class="refresh" onclick="location.reload()">Refresh</button>
-<table>
-  <thead>
-    <tr><th>Waktu</th><th>Buyer</th><th>Telegram</th><th>Status</th><th>URL</th><th>Password</th></tr>
-  </thead>
-  <tbody>
-    {% for id, job in jobs.items() %}
-    <tr>
-      <td>{{ job.created_at }}</td>
-      <td>{{ job.buyer.name or '—' }}</td>
-      <td>{{ job.buyer.telegram or '—' }}</td>
-      <td><span class="status {{ job.status }}">{{ job.status }}</span></td>
-      <td class="mono">{% if job.order and job.order.url %}{{ job.order.url }}{% elif job.status == 'failed' %}{{ job.error }}{% else %}—{% endif %}</td>
-      <td class="mono">{% if job.order %}{{ job.order.admin_password }}{% else %}—{% endif %}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><div class="dot"></div>HERMES <span>ADMIN</span></div>
+    <div class="actions">
+      <a class="btn" href="/" target="_blank">Landing Page</a>
+      <form method="post" action="/admin/logout" style="display:inline;margin:0">
+        <button class="btn" type="submit">Logout</button>
+      </form>
+      <button class="btn btn-p" onclick="location.reload()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Waktu</th><th>Buyer</th><th>Telegram</th><th>Paket</th><th>Nominal</th>
+          <th>Status</th><th>Sisa Aktif</th><th>URL</th><th>Password</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for id, job in jobs.items() %}
+        <tr>
+          <td class="mono dim">{{ job.created_at }}</td>
+          <td>{{ job.buyer.name or '—' }}</td>
+          <td class="mono">{{ job.buyer.telegram or '—' }}</td>
+          <td>{{ job.buyer.package or '—' }}</td>
+          <td class="mono">Rp {{ job.buyer.price or '0' }}</td>
+          <td><span class="status {{ job.status }}">{{ job.status }}</span></td>
+          <td class="expiry mono" data-created="{{ job.created_at }}" data-status="{{ job.status }}">—</td>
+          <td class="mono">{% if job.order and job.order.url %}<a href="{{ job.order.url }}" style="color:var(--accent);text-decoration:none" target="_blank">Panel</a>{% if job.order.router_url %} · <a href="{{ job.order.router_url }}" style="color:#a5b4fc;text-decoration:none" target="_blank">9Router</a>{% endif %}{% if job.order.terminal_url %} · <a href="{{ job.order.terminal_url }}" style="color:#fbbf24;text-decoration:none" target="_blank">Terminal</a>{% endif %}{% elif job.status == 'failed' %}<span class="dim">{{ job.error }}</span>{% else %}<span class="dim">—</span>{% endif %}</td>
+          <td class="mono">{% if job.order %}{{ job.order.admin_password }}{% else %}<span class="dim">—</span>{% endif %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="empty">Belum ada order.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// Reminder 30 hari: hitung sisa aktif tiap order dari created_at (langganan bulanan)
+document.querySelectorAll('td.expiry').forEach(td => {
+  const created = td.dataset.created, status = td.dataset.status;
+  if (!created || status === 'cancelled' || status === 'failed') { td.innerHTML = '<span class="dim">—</span>'; return; }
+  const d = new Date(created.replace(' ', 'T'));
+  if (isNaN(d)) { td.textContent = '—'; return; }
+  const exp = new Date(d.getTime() + 30*24*60*60*1000);
+  const left = Math.ceil((exp - Date.now()) / 86400000);
+  if (left < 0)      td.innerHTML = `<span class="exp-dead">EXPIRED ${Math.abs(left)}d</span>`;
+  else if (left <= 3) td.innerHTML = `<span class="exp-warn">${left} hari</span>`;
+  else               td.innerHTML = `<span class="exp-ok">${left} hari</span>`;
+});
+
+// Stats header
+const counts = {};
+document.querySelectorAll('.status').forEach(s => { counts[s.textContent] = (counts[s.textContent]||0)+1; });
+const total = Object.values(counts).reduce((a,b)=>a+b,0);
+document.getElementById('stats').innerHTML = `
+  <div class="stat"><div class="num">${total}</div><div class="lbl">Total Order</div></div>
+  <div class="stat"><div class="num yellow">${counts['pending']||0}</div><div class="lbl">Pending</div></div>
+  <div class="stat"><div class="num">${(counts['processing']||0)+(counts['deploying']||0)}</div><div class="lbl">Deploying</div></div>
+  <div class="stat"><div class="num green">${counts['ready']||0}</div><div class="lbl">Ready</div></div>
+  <div class="stat"><div class="num red">${(counts['failed']||0)+(counts['cancelled']||0)}</div><div class="lbl">Failed/Batal</div></div>`;
+</script>
 </body>
 </html>

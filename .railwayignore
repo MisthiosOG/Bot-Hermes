@@ -1,0 +1,27 @@
+# Keep image small: ship only runtime files
+__pycache__/
+*.pyc
+*.png
+*.log
+orders.json
+web_jobs.json
+session_cookies.json
+debug_*.py
+deploy_test.py
+deploy_page_*.png
+diag_*.py
+extract_cookies.py
+find_tpl.py
+fix_session.py
+gen_tpl*.py
+introspect.py
+login_*.py
+magic_*.py
+new_github*.py
+search_tpl.py
+test_*.py
+ui_*.py
+uploads/
+templates/design-system/
+templates/*.png
+railway.toml

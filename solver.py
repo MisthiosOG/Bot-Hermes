@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os, requests, time
 class MuaraicaptchaSolver:
     """Solve Cloudflare Turnstile via Muaraicaptcha API."""
 

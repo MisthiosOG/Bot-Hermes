@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Gateway — Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Space Mono',monospace;background:#0a0a0a;color:#c0c0c0;
+  line-height:1.6;min-height:100vh;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+/* CRT scanline */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0,rgba(0,0,0,.15) 1px,transparent 1px,transparent 3px);
+}
+::selection{background:rgba(63,185,80,.35);color:#fff}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 20px;width:100%}
+
+/* ── Topbar ── */
+.topbar{
+  border-bottom:2px solid #222;padding:16px 0;
+  position:sticky;top:0;background:#0a0a0a;z-index:50;
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:15px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:1px}
+.logo::before{content:'> ';color:#555}
+.tabs{display:flex;gap:2px}
+.tab{
+  font-family:'Space Mono',monospace;padding:8px 16px;font-size:12px;font-weight:400;
+  cursor:pointer;color:#555;border:2px solid transparent;background:transparent;
+  transition:color .15s,border-color .15s;text-transform:uppercase;letter-spacing:.5px;
+}
+.tab:hover{color:#c0c0c0}
+.tab.active{color:#3fb950;border-color:#3fb950}
+.btn-top{
+  font-family:'Space Mono',monospace;padding:8px 16px;font-size:11px;font-weight:700;
+  cursor:pointer;color:#0a0a0a;background:#3fb950;border:none;
+  text-transform:uppercase;letter-spacing:1px;transition:opacity .15s;
+}
+.btn-top:hover{opacity:.8}
+
+/* ── Page ── */
+.page{flex:1;padding:32px 0 20px}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ── Hero ── */
+.hero{padding:48px 0 24px}
+.hero .badge{
+  display:inline-block;border:2px solid #222;padding:6px 14px;font-size:11px;
+  color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:24px;
+}
+.hero h1{font-size:44px;font-weight:700;line-height:1.1;color:#fff;margin-bottom:12px}
+.hero h1 .hl{color:#3fb950}
+.hero .sub{color:#666;font-size:14px;max-width:500px;margin-bottom:28px;line-height:1.7}
+.hero .sub a{color:#3fb950;text-decoration:none;border-bottom:2px solid #3fb950;padding-bottom:1px}
+.hero .sub a:hover{color:#4ade80}
+
+/* ── Feature list (terminal-style) ── */
+.feature-list{display:flex;flex-direction:column;gap:0;margin-top:32px;border:2px solid #222;border-bottom:none}
+.feature-row{
+  display:flex;align-items:center;gap:16px;padding:16px 20px;
+  border-bottom:1px solid #181818;transition:background .15s;
+}
+.feature-row:hover{background:rgba(63,185,80,.04)}
+.feature-row .prompt{color:#3fb950;font-size:13px;flex-shrink:0;width:20px}
+.feature-row .label{font-size:13px;font-weight:700;color:#fff;width:140px;flex-shrink:0}
+.feature-row .desc{font-size:12px;color:#555}
+
+@media(max-width:640px){
+  .feature-row{flex-wrap:wrap;gap:4px}
+  .feature-row .label{width:auto}
+}
+
+/* ── Order form ── */
+.order-card{max-width:480px;margin:0 auto;border:2px solid #222;padding:28px}
+.order-card h2{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px}
+.order-card .desc{color:#555;font-size:12px;margin-bottom:20px}
+.step-dots{display:flex;gap:4px;margin-bottom:24px}
+.step-dots span{flex:1;height:4px;background:#181818;transition:background .2s}
+.step-dots span.active{background:#3fb950}
+.step{display:none}
+.step.active{display:block}
+.step label{font-size:10px;font-weight:700;color:#555;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+.step input,.step .file-area{
+  width:100%;padding:12px 14px;background:#0a0a0a;border:2px solid #222;
+  color:#c0c0c0;font-size:13px;margin-bottom:14px;font-family:'Space Mono',monospace;
+  transition:border-color .15s;
+}
+.step input:focus{outline:none;border-color:#3fb950}
+.gopay-box{border:2px solid #222;padding:16px;text-align:center;margin-bottom:16px}
+.gopay-box .lbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px}
+.gopay-box .num{font-size:22px;font-weight:700;color:#3fb950;margin:6px 0;letter-spacing:2px}
+.up-area input{display:none}
+.up-area{
+  border:2px dashed #222;text-align:center;padding:24px 20px;
+  cursor:pointer;transition:border-color .15s;margin-bottom:14px;
+}
+.up-area:hover{border-color:#333}
+.up-area .up-icon svg{width:28px;height:28px;stroke:#444;fill:none;stroke-width:1.5}
+.up-area .up-txt{color:#555;font-size:12px;margin-top:8px}
+.up-area .up-txt span{color:#888}
+.up-area.has{border-color:#3fb950;border-style:solid}
+.up-area.has .up-icon svg{stroke:#3fb950}
+.up-area.has .up-txt{color:#3fb950}
+
+/* ── Terminal-style buttons ── */
+.btn-prim{
+  width:100%;padding:12px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
+  cursor:pointer;color:#0a0a0a;background:#3fb950;border:none;
+  text-transform:uppercase;letter-spacing:1.5px;transition:opacity .15s;
+}
+.btn-prim:hover{opacity:.85}
+.btn-sec{
+  width:100%;padding:12px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
+  cursor:pointer;color:#555;background:transparent;border:2px solid #222;
+  text-transform:uppercase;letter-spacing:1.5px;transition:color .15s,border-color .15s;
+}
+.btn-sec:hover{color:#c0c0c0;border-color:#444}
+
+.note-bot{font-size:11px;color:#444;margin-top:14px;text-align:center}
+.note-bot code{border:1px solid #222;padding:2px 6px;font-size:10px}
+
+/* ── Invoice / Processing ── */
+.proc-wrap{max-width:560px;margin:0 auto}
+.status-card{border:2px solid #222;padding:48px 28px;text-align:center}
+.status-card .indicator{
+  width:40px;height:40px;border:3px solid #222;border-top-color:#3fb950;
+  margin:0 auto 20px;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status-card h2{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.status-card p{color:#555;font-size:12px}
+
+.invoice-wrap{display:none}
+.invoice-wrap.show{display:block}
+
+.invoice-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid #222}
+.invoice-header .check{
+  width:44px;height:44px;border:2px solid #3fb950;
+  display:flex;align-items:center;justify-content:center;
+}
+.invoice-header .check svg{width:20px;height:20px;stroke:#3fb950;fill:none;stroke-width:2.5}
+.invoice-header h2{font-size:18px;font-weight:700;color:#fff}
+.invoice-header p{font-size:11px;color:#555}
+
+.invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:20px}
+.invoice-grid .box{
+  border:2px solid #222;padding:14px;
+}
+.invoice-grid .box .lbl{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.invoice-grid .box .val{font-size:12px;word-break:break-all}
+.invoice-grid .box .val.grn{color:#3fb950}
+
+.guide-card{border:2px solid #222;padding:20px;margin-bottom:20px}
+.guide-card h4{font-size:11px;font-weight:700;color:#3fb950;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
+.guide-card ol{list-style:none}
+.guide-card li{
+  padding:6px 0;font-size:12px;color:#666;
+  counter-increment:item;
+}
+.guide-card li::before{
+  content:'$ ' counter(item) ' ';color:#3fb950;
+  font-weight:700;
+}
+.guide-card ol{counter-reset:item}
+
+.summary{display:flex;justify-content:space-between;padding:14px 0;border-top:2px solid #222;margin-bottom:20px;font-size:12px}
+.summary .k{color:#555}
+.summary .v{color:#fff;font-weight:700}
+
+.btn-copy{
+  width:100%;padding:12px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+  cursor:pointer;color:#3fb950;background:transparent;border:2px solid #222;
+  text-transform:uppercase;letter-spacing:1.5px;transition:color .15s,border-color .15s;
+}
+.btn-copy:hover{color:#4ade80;border-color:#3fb950}
+
+/* ── Cara Kerja ── */
+.steps-list{max-width:620px;margin:0 auto}
+.step-item{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid #181818}
+.step-item:last-child{border-bottom:none}
+.step-item .num{font-size:13px;font-weight:700;color:#3fb950;width:28px;flex-shrink:0}
+.step-item .body h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.step-item .body p{font-size:12px;color:#555}
+.step-item .body .tag{display:inline-block;margin-top:6px;border:1px solid #222;padding:2px 10px;font-size:10px;color:#3fb950}
+
+/* ── FAQ ── */
+.faq-wrap{max-width:660px;margin:0 auto}
+.faq-list{display:flex;flex-direction:column;gap:2px;margin-bottom:28px}
+details.faq-card{border:2px solid #222}
+details.faq-card summary{
+  cursor:pointer;padding:14px 18px;font-size:12px;font-weight:700;color:#c0c0c0;
+  list-style:none;display:flex;justify-content:space-between;align-items:center;
+  transition:background .15s;
+}
+details.faq-card summary:hover{background:rgba(255,255,255,.03)}
+details.faq-card summary .ico{width:16px;height:16px;stroke:#555;fill:none;stroke-width:2;flex-shrink:0}
+details.faq-card[open] summary .ico{stroke:#3fb950}
+details.faq-card .ans{padding:0 18px 14px;font-size:12px;color:#555;line-height:1.7}
+details.faq-card[open] summary{border-bottom:1px solid #222}
+
+.faq-contact{border:2px solid #222;padding:24px;text-align:center}
+.faq-contact h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.faq-contact p{font-size:12px;color:#555;margin-bottom:14px}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 20px;
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+  background:transparent;border:2px solid #222;color:#555;
+  cursor:pointer;text-decoration:none;transition:color .15s,border-color .15s;
+}
+.btn-ghost:hover{color:#c0c0c0;border-color:#444}
+
+footer{border-top:2px solid #111;padding:24px 0;text-align:center;color:#333;font-size:11px}
+
+/* ── Toast ── */
+.toast{position:fixed;top:20px;right:20px;z-index:999;max-width:360px;transform:translateX(120%);transition:transform .25s,opacity .25s;opacity:0}
+.toast.show{transform:translateX(0);opacity:1}
+.toast-inner{background:#111;border:2px solid #222;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.toast-inner .t-icon{width:18px;height:18px;flex-shrink:0}
+.toast-inner .t-icon.err{stroke:#ef4444;fill:none;stroke-width:2}
+.toast-inner .t-icon.ok{stroke:#3fb950;fill:none;stroke-width:2}
+.toast-inner .t-msg{font-size:12px;color:#c0c0c0}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:640px){
+  .hero h1{font-size:28px}
+  .topbar .tabs{gap:0}
+  .tab{padding:6px 10px;font-size:10px}
+  .invoice-grid{grid-template-columns:1fr}
+  .order-card{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="wrap">
+    <div class="logo">Hermes Gateway</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="beranda">Beranda</button>
+      <button class="tab" data-tab="harga">Harga</button>
+      <button class="tab" data-tab="invoice" id="tabInvBtn" style="display:none">Pesanan</button>
+      <button class="tab" data-tab="cara-kerja">Cara Kerja</button>
+      <button class="tab" data-tab="faq">FAQ</button>
+    </div>
+    <button class="btn-top" onclick="switchTab('harga')">Order</button>
+  </div>
+</nav>
+
+<div class="page"><div class="wrap">
+
+<!-- ═══ Beranda ═══ -->
+<section class="tab-pane active" id="tab-beranda">
+  <div class="hero">
+    <div class="badge">$ ./deploy.sh</div>
+    <h1>AI agent pribadi.<br><span class="hl">Kamu yang kontrol.</span></h1>
+    <p class="sub">
+      Self-hosted AI agent dengan panel admin, SSH root, multi-provider LLM.<br>
+      Bukan SaaS. Bukan share-account. <a href="#" onclick="switchTab('harga');return false">Infrastructure punya kamu.</a>
+    </p>
+    <button class="btn-prim" style="width:auto;padding:12px 32px" onclick="switchTab('harga')">Mulai Sekarang</button>
+  </div>
+
+  <div class="feature-list">
+    <div class="feature-row"><span class="prompt">$</span><span class="label">Admin Panel</span><span class="desc">Kelola provider, channel, tools dari browser — langsung dari VPS kamu.</span></div>
+    <div class="feature-row"><span class="prompt">$</span><span class="label">SSH Root</span><span class="desc">Akses penuh server. Bukan walled garden. Beneran root.</span></div>
+    <div class="feature-row"><span class="prompt">$</span><span class="label">20+ LLM</span><span class="desc">OpenRouter, Anthropic, DeepSeek, Gemini, Grok — pilih sendiri.</span></div>
+    <div class="feature-row"><span class="prompt">$</span><span class="label">Multi-Channel</span><span class="desc">Telegram, Discord, WhatsApp — satu panel, semua channel.</span></div>
+    <div class="feature-row"><span class="prompt">$</span><span class="label">Auto-Deploy</span><span class="desc">1 order = akun + panel + domain. 3 menit, nggak pake ribet.</span></div>
+    <div class="feature-row"><span class="prompt">$</span><span class="label">Auto-Restart</span><span class="desc">Backup, restore, auto-restart. Agent jalan terus 24/7.</span></div>
+  </div>
+</section>
+
+<!-- ═══ Harga ═══ -->
+<section class="tab-pane" id="tab-harga">
+  <div style="max-width:480px;margin:0 auto;text-align:center;margin-bottom:20px">
+    <div style="font-size:36px;font-weight:700;color:#fff">Rp 50.000<small style="font-size:13px;color:#555;font-weight:400"> / bulan</small></div>
+    <p style="color:#555;font-size:12px;margin-top:6px">Self-hosted AI agent. Bayar bulanan, kontrol penuh.</p>
+  </div>
+  <div class="order-card">
+    <div class="step-dots"><span class="active" id="dot1"></span><span id="dot2"></span><span id="dot3"></span></div>
+    <div class="step active" id="step1">
+      <h2>Data diri</h2>
+      <p class="desc">Isi nama dan username Telegram kamu</p>
+      <label>Nama</label><input id="name" type="text" placeholder="Nama kamu">
+      <label>Username Telegram</label><input id="telegram" type="text" placeholder="@username">
+      <button class="btn-prim" onclick="nextStep()">Lanjut</button>
+    </div>
+    <div class="step" id="step2">
+      <h2>Pembayaran</h2>
+      <p class="desc">Transfer Rp 50.000 ke GoPay di bawah, upload buktinya</p>
+      <div class="gopay-box"><div class="lbl">GoPay</div><div class="num">0881022218911</div></div>
+      <label>Upload bukti transfer</label>
+      <div class="up-area" id="fileArea" onclick="document.getElementById('photo').click()">
+        <input type="file" id="photo" accept="image/*" capture="environment" onchange="fileChosen(this)">
+        <div class="up-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <div class="up-txt" id="fileTxt">Klik untuk upload <span>foto bukti TF</span></div>
+      </div>
+      <button class="btn-sec" onclick="prevStep()">Kembali</button>
+      <button class="btn-prim" style="margin-top:10px" onclick="submitOrder()">Kirim Pesanan</button>
+    </div>
+    <div class="step" id="step3">
+      <h2>Pesanan dikirim</h2>
+      <p class="desc">Tunggu admin proses pesanan kamu</p>
+      <p style="color:#555;font-size:12px;margin-top:12px">Kredensial muncul di tab <strong style="color:#c0c0c0">Pesanan</strong> + dikirim ke Telegram setelah disetujui.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Invoice ═══ -->
+<section class="tab-pane" id="tab-invoice">
+  <div class="proc-wrap">
+    <div class="status-card" id="procStatus">
+      <div class="indicator"></div>
+      <h2>Memproses...</h2>
+      <p>Pesanan sedang diproses. 1-3 menit.</p>
+    </div>
+    <div class="invoice-wrap" id="invWrap">
+      <div class="invoice-header">
+        <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div><h2>Pesanan Selesai</h2><p id="invBuyer">Atas nama: —</p></div>
+      </div>
+      <div class="invoice-grid">
+        <div class="box"><div class="lbl">URL Panel</div><div class="val grn" id="invUrl">—</div></div>
+        <div class="box"><div class="lbl">Username</div><div class="val" id="invUser">admin</div></div>
+        <div class="box"><div class="lbl">Password</div><div class="val" id="invPass">—</div></div>
+        <div class="box"><div class="lbl">SSH Password</div><div class="val" id="invSsh">—</div></div>
+      </div>
+      <div class="guide-card">
+        <h4>$ man setup</h4>
+        <ol>
+          <li>Buka URL panel di browser</li>
+          <li>Login pake username &amp; password di atas</li>
+          <li>Tambah provider LLM (OpenRouter, Anthropic, dll)</li>
+          <li>Hubungkan channel Telegram / Discord / WhatsApp</li>
+          <li>Agent AI kamu siap dipakai</li>
+        </ol>
+      </div>
+      <div class="summary"><span class="k">Paket</span><span class="v">Hermes Gateway — Rp 50.000/bln</span></div>
+      <button class="btn-copy" onclick="copyAll()">Salin Semua Kredensial</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Cara Kerja ═══ -->
+<section class="tab-pane" id="tab-cara-kerja">
+  <div class="steps-list">
+    <div class="step-item"><div class="num">01</div><div class="body"><h3>Order &amp; Bayar</h3><p>Isi data, transfer ke GoPay, upload bukti.</p><span class="tag">~2 menit</span></div></div>
+    <div class="step-item"><div class="num">02</div><div class="body"><h3>Verifikasi Admin</h3><p>Admin cek bukti TF via Telegram, lalu approve.</p><span class="tag">manual</span></div></div>
+    <div class="step-item"><div class="num">03</div><div class="body"><h3>Auto-Deploy</h3><p>Sistem bikin akun Railway + deploy panel + generate domain.</p><span class="tag">~2 menit</span></div></div>
+    <div class="step-item"><div class="num">04</div><div class="body"><h3>Terima &amp; Pakai</h3><p>Kredensial dikirim ke Telegram + muncul di tab Pesanan.</p><span class="tag">langsung</span></div></div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="tab-pane" id="tab-faq">
+  <div class="faq-wrap">
+    <div class="faq-list">
+      <details class="faq-card"><summary>Berapa lama setup-nya?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">1-3 menit setelah pembayaran diverifikasi. Sistem kerja otomatis — bikin akun Railway, deploy panel, generate domain.</div></details>
+      <details class="faq-card"><summary>API key LLM dari mana?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Kamu isi sendiri di dashboard. Bisa OpenRouter (gratis beberapa model), Anthropic, DeepSeek, Gemini, Grok, 20+ provider.</div></details>
+      <details class="faq-card"><summary>Ini VPS bukan?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Bukan VPS biasa. Ini panel AI agent self-hosted. Dapet admin dashboard web + SSH root access ke instance Railway.</div></details>
+      <details class="faq-card"><summary>Kredensial dikirim ke mana?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Telegram kamu (pastikan udah <code style="border:1px solid #222;padding:1px 5px;font-size:11px">/start</code> bot) + tab Pesanan di sini.</div></details>
+      <details class="faq-card"><summary>Bisa ganti password?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Bisa. Login ke panel admin, buka Settings, ada opsi ganti password admin &amp; SSH.</div></details>
+      <details class="faq-card"><summary>Ada masalah?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Hubungi admin via Telegram. Garansi setup berhasil atau refund.</div></details>
+    </div>
+    <div class="faq-contact">
+      <h4>Masih bingung?</h4>
+      <p>Chat admin langsung via Telegram</p>
+      <a href="https://t.me/hermesadmin" class="btn-ghost" target="_blank">Chat Admin</a>
+    </div>
+  </div>
+</section>
+
+</div></div>
+
+<div class="toast" id="toast"><div class="toast-inner"><svg class="t-icon" id="toastIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg><span class="t-msg" id="toastMsg"></span></div></div>
+<footer>Hermes Gateway · self-hosted AI agent · 2026</footer>
+
+<script>
+let currentStep=1,_jobId=null,_toastTimer=null;
+function toast(msg,isErr=true){
+  const t=document.getElementById('toast'),icon=document.getElementById('toastIcon'),m=document.getElementById('toastMsg');
+  m.textContent=msg;icon.setAttribute('class','t-icon '+(isErr?'err':'ok'));
+  icon.innerHTML=isErr?'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>':'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+  t.classList.add('show');clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function switchTab(name){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const tb=document.querySelector(`.tab[data-tab="${name}"]`);
+  if(tb)tb.classList.add('active');
+}
+document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>switchTab(t.dataset.tab))});
+function nextStep(){
+  if(!document.getElementById('telegram').value.trim()){toast('Isi username Telegram dulu');return}
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('dot1').classList.remove('active');
+  document.getElementById('dot2').classList.add('active');currentStep=2;
+}
+function prevStep(){
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('dot2').classList.remove('active');
+  document.getElementById('dot1').classList.add('active');currentStep=1;
+}
+function fileChosen(i){
+  const a=document.getElementById('fileArea'),t=document.getElementById('fileTxt');
+  if(i.files&&i.files[0]){a.classList.add('has');t.innerHTML='<span>'+i.files[0].name+'</span>'}
+}
+async function submitOrder(){
+  const name=document.getElementById('name').value.trim(),tg=document.getElementById('telegram').value.trim(),photo=document.getElementById('photo').files[0];
+  if(!tg){toast('Isi username Telegram');return}
+  if(!photo){toast('Upload bukti transfer dulu');return}
+  const fd=new FormData();fd.append('name',name);fd.append('telegram',tg);fd.append('payment_photo',photo);
+  try{const res=await fetch('/api/order',{method:'POST',body:fd});const d=await res.json();_jobId=d.job_id;switchTab('invoice');pollInvoice(d.job_id)}catch(e){toast('Gagal: '+e.message)}
+}
+async function pollInvoice(jobId){
+  for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,5000));
+    try{const res=await fetch('/api/order/'+jobId);const job=await res.json();
+      if(job.status==='ready'||job.status==='deployed_no_url'){showInvoice(job);return}
+      if(job.status==='failed'){document.querySelector('#procStatus h2').textContent='Gagal, hubungi admin';return}
+    }catch(e){}}
+  document.querySelector('#procStatus h2').textContent='Terlalu lama, hubungi admin';
+}
+function showInvoice(job){
+  const o=job.order||{};
+  document.getElementById('invUrl').textContent=o.url||'—';
+  document.getElementById('invUser').textContent=o.admin_username||'admin';
+  document.getElementById('invPass').textContent=o.admin_password||'—';
+  document.getElementById('invSsh').textContent=o.ssh_password||'—';
+  document.getElementById('invBuyer').textContent='Atas nama: '+(job.buyer?.name||'—');
+  document.getElementById('procStatus').style.display='none';
+  document.getElementById('invWrap').classList.add('show');
+  document.getElementById('tabInvBtn').style.display='inline-block';
+}
+function copyAll(){
+  const t='URL: '+document.getElementById('invUrl').textContent+'\nUser: '+document.getElementById('invUser').textContent+'\nPass: '+document.getElementById('invPass').textContent+'\nSSH:  '+document.getElementById('invSsh').textContent;
+  navigator.clipboard.writeText(t).then(()=>{const b=document.querySelector('.btn-copy');b.textContent='Tersalin!';setTimeout(()=>b.textContent='Salin Semua Kredensial',2000)});
+}
+</script>
+</body>
+</html>

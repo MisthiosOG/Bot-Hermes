@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order — Hermes Gateway</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Inter',-apple-system,sans-serif;background:#070708;color:#e3e3e5;
+  line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;padding:40px 20px;
+}
+::selection{background:rgba(52,211,153,.2);color:#fff}
+
+.wrap{max-width:540px;width:100%}
+
+/* ── Header ── */
+.o-header{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.o-header .dot{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 12px rgba(52,211,153,.4)}
+.o-header h1{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.o-header a{margin-left:auto;font-size:12px;color:#555;text-decoration:none;padding:6px 14px;border:1px solid rgba(255,255,255,.06);border-radius:8px;transition:all .2s}
+.o-header a:hover{color:#e3e3e5;border-color:rgba(255,255,255,.12)}
+
+/* ── Card ── */
+.card{background:rgba(18,18,22,.6);border:1px solid rgba(255,255,255,.04);border-radius:16px;padding:32px;margin-bottom:16px}
+.card .badge{font-size:10px;font-weight:600;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.card h2{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.card .desc{font-size:13px;color:#555;margin-bottom:20px}
+
+/* ── Form ── */
+label{font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+input{width:100%;padding:11px 14px;background:#070708;border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#e3e3e5;font-size:14px;margin-bottom:14px;font-family:'Inter',sans-serif;transition:border-color .2s}
+input:focus{outline:none;border-color:#34d399}
+
+/* ── Package selector ── */
+.pkg-select{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.pkg-opt{
+  padding:14px 10px;border:1px solid rgba(255,255,255,.06);border-radius:10px;
+  text-align:center;cursor:pointer;transition:all .25s;background:transparent;
+}
+.pkg-opt:hover{border-color:rgba(255,255,255,.12)}
+.pkg-opt.sel{border-color:#34d399;background:rgba(52,211,153,.06)}
+.pkg-opt .pr{font-size:18px;font-weight:800;color:#fff}
+.pkg-opt .nm{font-size:11px;color:#555;margin-top:2px}
+.pkg-opt .wr{font-size:9px;color:#555;margin-top:4px}
+.pkg-opt.sel .wr{color:#34d399}
+
+/* ── Pay info ── */
+.pay-info{background:rgba(52,211,153,.04);border:1px solid rgba(52,211,153,.12);border-radius:10px;padding:16px;text-align:center;margin-bottom:16px}
+.pay-info .lbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.8px}
+.pay-info .num{font-size:22px;font-weight:700;letter-spacing:2px;color:#34d399;margin:6px 0;font-family:'JetBrains Mono',monospace}
+
+/* ── Upload ── */
+.up-area input{display:none}
+.up-area{
+  border:1px dashed rgba(255,255,255,.06);border-radius:10px;text-align:center;
+  padding:24px 20px;cursor:pointer;transition:all .25s;margin-bottom:14px;
+}
+.up-area:hover{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.02)}
+.up-area .up-icon svg{width:28px;height:28px;stroke:#444;fill:none;stroke-width:1.5}
+.up-area .up-txt{color:#555;font-size:13px;margin-top:8px}
+.up-area .up-txt span{color:#888}
+.up-area.has{border-color:#34d399;border-style:solid;background:rgba(52,211,153,.03)}
+.up-area.has .up-icon svg{stroke:#34d399}
+.up-area.has .up-txt{color:#34d399}
+
+/* ── Buttons ── */
+.btn-row{display:flex;gap:8px}
+.btn-p{
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 24px;background:#34d399;color:#052e16;border:none;border-radius:10px;
+  font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .25s;text-decoration:none;
+}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(52,211,153,.25)}
+.btn-s{
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;
+  color:#777;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .25s;text-decoration:none;
+}
+.btn-s:hover{color:#e3e3e5;border-color:rgba(255,255,255,.12)}
+
+/* ── Processing ── */
+.proc{padding:40px 20px;text-align:center}
+.proc .spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.04);border-top-color:#34d399;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc h3{font-size:16px;font-weight:600;color:#fff;margin-bottom:4px}
+.proc p{font-size:13px;color:#555;margin-bottom:20px}
+.proc-steps{display:flex;flex-direction:column;gap:6px;max-width:240px;margin:0 auto;text-align:left}
+.proc-step{display:flex;align-items:center;gap:10px;font-size:13px;color:#555;opacity:.4;transition:all .4s}
+.proc-step .ck{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .4s}
+.proc-step .ck svg{width:11px;height:11px;stroke:transparent;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.proc-step.done{opacity:1;color:#e3e3e5}
+.proc-step.done .ck{background:#34d399;border-color:#34d399}
+.proc-step.done .ck svg{stroke:#000}
+.proc-step.go{opacity:1;color:#e3e3e5}
+.proc-step.go .ck{border-color:#34d399}
+
+/* ── Invoice ── */
+.inv{padding:0}
+.inv-head{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.04)}
+.inv-head .check{
+  width:44px;height:44px;border-radius:50%;background:rgba(52,211,153,.1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.inv-head .check svg{width:22px;height:22px;stroke:#34d399;fill:none;stroke-width:2.5}
+.inv-head h2{font-size:18px;font-weight:700;color:#fff}
+.inv-head p{font-size:12px;color:#555;margin-top:2px}
+
+.inv-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.inv-meta .box{background:#070708;border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:12px 14px}
+.inv-meta .box .l{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.inv-meta .box .v{font-size:12px;color:#e3e3e5;font-weight:600;font-family:'JetBrains Mono',monospace}
+.inv-meta .box .v.gr{color:#34d399}
+
+.inv-total{background:#070708;border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:16px;margin-bottom:20px}
+.inv-total .row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.inv-total .row .k{color:#555}
+.inv-total .row .v{color:#e3e3e5}
+.inv-total .row.big{border-top:1px solid rgba(255,255,255,.04);margin-top:6px;padding-top:12px;font-weight:700}
+.inv-total .row.big .v{color:#fff;font-size:16px}
+
+.inv-guide{background:#070708;border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:18px;margin-bottom:20px}
+.inv-guide h4{font-size:11px;font-weight:700;color:#34d399;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.inv-guide ol{list-style:none;counter-reset:g}
+.inv-guide li{padding:5px 0;font-size:12px;color:#555;counter-increment:g;display:flex;gap:8px;align-items:baseline}
+.inv-guide li::before{content:counter(g);width:18px;height:18px;border-radius:50%;background:rgba(52,211,153,.08);color:#34d399;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+.inv-actions{display:flex;gap:8px}
+.inv-actions .btn-p{flex:1}
+.inv-actions .btn-s{flex:1}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;opacity:0;pointer-events:none;transition:all .35s ease}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.toast-inner{display:flex;align-items:center;gap:10px;background:#18181b;border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(16px);border-radius:12px;padding:12px 20px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast-inner .t-icon{width:18px;height:18px;flex-shrink:0;stroke:#e3e3e5;fill:none;stroke-width:2}
+.toast-inner .t-msg{font-size:13px;color:#e3e3e5}
+
+/* ── Responsive ── */
+@media(max-width:480px){
+  body{padding:20px 12px}
+  .card{padding:20px;border-radius:12px}
+  .pkg-select{grid-template-columns:1fr;gap:6px}
+  .pkg-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:left}
+  .pkg-opt .pr{font-size:16px}
+  .inv-meta{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- Header -->
+<div class="o-header">
+  <span class="dot"></span>
+  <h1>Hermes Gateway</h1>
+  <a href="javascript:window.close()">✕ Tutup</a>
+</div>
+
+<!-- ═══ STEP 1: Form ═══ -->
+<div class="card" id="stepForm">
+  <div class="badge">Langkah 1 dari 2</div>
+  <h2>Selesaikan Pesanan</h2>
+  <p class="desc">Pilih paket, isi data, dan upload bukti transfer.</p>
+
+  <label>Pilih Paket</label>
+  <div class="pkg-select">
+    <div class="pkg-opt" data-price="15000" data-name="Basic" onclick="selectPkg(this,'Basic',15000)">
+      <div class="pr">Rp 15K</div>
+      <div class="nm">Basic</div>
+      <div class="wr">No garansi</div>
+    </div>
+    <div class="pkg-opt sel" data-price="35000" data-name="Pro" onclick="selectPkg(this,'Pro',35000)">
+      <div class="pr">Rp 35K</div>
+      <div class="nm">Pro</div>
+      <div class="wr">Garansi 3 hari</div>
+    </div>
+    <div class="pkg-opt" data-price="50000" data-name="Premium" onclick="selectPkg(this,'Premium',50000)">
+      <div class="pr">Rp 50K</div>
+      <div class="nm">Premium</div>
+      <div class="wr">Garansi 7 hari</div>
+    </div>
+  </div>
+
+  <label>Nama kamu</label>
+  <input id="inpName" type="text" placeholder="Masukkan nama lengkap">
+
+  <label>Username Telegram</label>
+  <input id="inpTg" type="text" placeholder="@username">
+
+  <div class="pay-info">
+    <div class="lbl">Transfer ke GoPay</div>
+    <div class="num">0881022218911</div>
+  </div>
+
+  <label>Upload bukti transfer</label>
+  <div class="up-area" id="upArea" onclick="document.getElementById('upFile').click()">
+    <input type="file" id="upFile" accept="image/*" capture="environment" onchange="fileChosen(this)">
+    <div class="up-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+    <div class="up-txt" id="upTxt">Klik untuk upload <span>foto bukti TF</span></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-s" onclick="window.close()">Batal</button>
+    <button class="btn-p" onclick="submitOrder()">Kirim Pesanan</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 2: Processing ═══ -->
+<div class="card" id="stepProc" style="display:none">
+  <div class="proc">
+    <div class="spin"></div>
+    <h3>Memproses Pesanan</h3>
+    <p>Pesanan kamu sedang diproses. Biasanya 1-3 menit.</p>
+    <div class="proc-steps">
+      <div class="proc-step" id="ps1"><span class="ck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Verifikasi pembayaran</div>
+      <div class="proc-step" id="ps2"><span class="ck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Deploy panel Hermes</div>
+      <div class="proc-step" id="ps3"><span class="ck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Generate domain &amp; kredensial</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STEP 3: Invoice ═══ -->
+<div class="card" id="stepInv" style="display:none">
+  <div class="inv">
+    <div class="inv-head">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><h2>Pesanan Selesai</h2><p id="invBuyer">Atas nama: —</p></div>
+    </div>
+
+    <div class="inv-meta">
+      <div class="box"><div class="l">Order ID</div><div class="v" id="invId">#HG-20260817-001</div></div>
+      <div class="box"><div class="l">Tanggal</div><div class="v" id="invDate">17 Aug 2026</div></div>
+      <div class="box"><div class="l">Paket</div><div class="v" id="invPkg">Pro</div></div>
+      <div class="box"><div class="l">Status</div><div class="v gr">✓ Active</div></div>
+    </div>
+
+    <div class="inv-total">
+      <div class="row"><span class="k">Paket <span id="invPkg2">Pro</span></span><span class="v" id="invPrice">Rp 35.000</span></div>
+      <div class="row"><span class="k">Domain publik</span><span class="v">Gratis</span></div>
+      <div class="row"><span class="k">SSH access</span><span class="v">Termasuk</span></div>
+      <div class="row big"><span class="k">Total</span><span class="v" id="invTotal">Rp 35.000</span></div>
+    </div>
+
+    <label style="margin-bottom:8px">3 Link Akses Kamu</label>
+    <div class="inv-meta" style="margin-bottom:20px">
+      <div class="box" style="grid-column:1/-1"><div class="l">URL Panel (Hermes)</div><div class="v gr" id="invUrl" style="font-size:13px">—</div></div>
+      <div class="box" style="grid-column:1/-1"><div class="l">URL 9Router</div><div class="v gr" id="invRouterUrl" style="font-size:13px">—</div></div>
+      <div class="box" style="grid-column:1/-1"><div class="l">URL Terminal Web</div><div class="v gr" id="invTermUrl" style="font-size:13px">—</div></div>
+      <div class="box"><div class="l">Username Panel</div><div class="v" id="invUser">admin</div></div>
+      <div class="box"><div class="l">Password Panel</div><div class="v" id="invPass">—</div></div>
+      <div class="box"><div class="l">Password 9Router</div><div class="v" id="invRouterPass">—</div></div>
+      <div class="box"><div class="l">Password Terminal</div><div class="v" id="invTermPass">—</div></div>
+      <div class="box"><div class="l">SSH Password</div><div class="v" id="invSsh">—</div></div>
+      <a href="https://t.me/dieforcringes" target="_blank" class="box" style="display:flex;flex-direction:column;justify-content:center;text-decoration:none;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(52,211,153,.3)'" onmouseout="this.style.borderColor=''">
+        <div class="l" style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Contact Admin
+        </div>
+        <div class="v" style="color:#34d399;font-size:12px">@dieforcringes</div>
+      </a>
+    </div>
+
+    <div class="inv-guide">
+      <h4>Cara Pakai</h4>
+      <ol>
+        <li>Buka URL panel di browser kamu</li>
+        <li>Login dengan username &amp; password di atas</li>
+        <li>Tambah provider LLM (OpenRouter, Anthropic, dll)</li>
+        <li>Hubungkan channel Telegram / Discord / WhatsApp</li>
+        <li>Agent AI kamu siap digunakan!</li>
+      </ol>
+    </div>
+
+    <div class="inv-actions">
+      <button class="btn-s" onclick="window.print()">🖨 Cetak</button>
+      <button class="btn-p" onclick="copyAll()">Salin Semua Kredensial</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"><div class="toast-inner"><svg class="t-icon" id="toastIcon" viewBox="0 0 24 24" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span class="t-msg" id="toastMsg"></span></div></div>
+
+<script>
+let selPkg = 'Pro', selPrice = 35000;
+let toastTimer;
+
+// read URL params
+const params = new URLSearchParams(window.location.search);
+if (params.get('pkg')) {
+  selPkg = params.get('pkg');
+  selPrice = parseInt(params.get('price')) || 35000;
+  document.querySelectorAll('.pkg-opt').forEach(o => {
+    o.classList.toggle('sel', o.dataset.name === selPkg);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function selectPkg(el, name, price) {
+  document.querySelectorAll('.pkg-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  selPkg = name;
+  selPrice = price;
+}
+
+function fileChosen(i) {
+  const a = document.getElementById('upArea'), t = document.getElementById('upTxt');
+  if (i.files && i.files[0]) { a.classList.add('has'); t.innerHTML = '<span>' + i.files[0].name + '</span>'; }
+}
+
+function submitOrder() {
+  const name = document.getElementById('inpName').value.trim();
+  const tg = document.getElementById('inpTg').value.trim();
+  const photo = document.getElementById('upFile').files[0];
+  if (!name) { showToast('Isi nama kamu dulu'); return; }
+  if (!tg) { showToast('Isi username Telegram'); return; }
+  if (!photo) { showToast('Upload bukti transfer'); return; }
+
+  // show processing
+  document.getElementById('stepForm').style.display = 'none';
+  document.getElementById('stepProc').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // submit to backend
+  var fd = new FormData();
+  fd.append('name', name);
+  fd.append('telegram', tg);
+  fd.append('package', selPkg);
+  fd.append('payment_photo', photo);
+  fd.append('price', selPrice);
+
+  fetch('/api/order', { method: 'POST', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.job_id) {
+        // animate steps
+        setTimeout(function() { document.getElementById('ps1').classList.add('done'); }, 1000);
+        setTimeout(function() { document.getElementById('ps2').classList.add('go'); }, 1000);
+        setTimeout(function() { document.getElementById('ps2').classList.remove('go'); document.getElementById('ps2').classList.add('done'); document.getElementById('ps3').classList.add('go'); }, 2500);
+        setTimeout(function() { document.getElementById('ps3').classList.remove('go'); document.getElementById('ps3').classList.add('done'); }, 3800);
+
+        // poll for completion
+        var pollTimer = setInterval(function() {
+          fetch('/api/order/' + d.job_id)
+            .then(function(r) { return r.json(); })
+            .then(function(status) {
+              if (status.status === 'ready') {
+                clearInterval(pollTimer);
+                document.getElementById('stepProc').style.display = 'none';
+                document.getElementById('stepInv').style.display = 'block';
+                var o = status.order || {};
+                document.getElementById('invBuyer').textContent = 'Atas nama: ' + name;
+                document.getElementById('invId').textContent = '#' + d.job_id;
+                document.getElementById('invDate').textContent = new Date().toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+                document.getElementById('invPkg').textContent = selPkg;
+                document.getElementById('invPkg2').textContent = selPkg;
+                document.getElementById('invPrice').textContent = 'Rp ' + parseInt(selPrice).toLocaleString('id-ID');
+                document.getElementById('invTotal').textContent = 'Rp ' + parseInt(selPrice).toLocaleString('id-ID');
+                document.getElementById('invUrl').textContent = o.url || 'https://' + tg.replace('@','') + '.hermes.app';
+                document.getElementById('invRouterUrl').textContent = o.router_url || '—';
+                document.getElementById('invTermUrl').textContent = o.terminal_url || '—';
+                document.getElementById('invUser').textContent = o.admin_username || 'admin';
+                document.getElementById('invPass').textContent = o.admin_password || 'hg_' + Math.random().toString(36).slice(2,10);
+                document.getElementById('invRouterPass').textContent = o.router_password || '—';
+                document.getElementById('invTermPass').textContent = o.terminal_password || '—';
+                document.getElementById('invSsh').textContent = o.ssh_password || 'ssh_' + Math.random().toString(36).slice(2,10);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast('Pesanan selesai! Kredensial siap digunakan');
+              }
+            });
+        }, 3000);
+      } else {
+        showToast('Gagal: ' + (d.error || 'unknown error'));
+        document.getElementById('stepForm').style.display = 'block';
+        document.getElementById('stepProc').style.display = 'none';
+      }
+    })
+    .catch(function(e) {
+      showToast('Gagal: ' + e.message);
+      document.getElementById('stepForm').style.display = 'block';
+      document.getElementById('stepProc').style.display = 'none';
+    });
+}
+
+function copyAll() {
+  const g = id => document.getElementById(id).textContent;
+  const t = '══════════ HERMES GATEWAY ══════════\n' +
+    'URL Panel    : ' + g('invUrl') + '\n' +
+    'Username     : ' + g('invUser') + '\n' +
+    'Password     : ' + g('invPass') + '\n' +
+    'URL 9Router  : ' + g('invRouterUrl') + '\n' +
+    'Password 9R  : ' + g('invRouterPass') + '\n' +
+    'URL Terminal : ' + g('invTermUrl') + '\n' +
+    'Password Term: ' + g('invTermPass') + '\n' +
+    'SSH Pass     : ' + g('invSsh') + '\n' +
+    '═══════════════════════════════════';
+  navigator.clipboard.writeText(t).then(() => showToast('Semua kredensial tersalin!'));
+}
+</script>
+</body>
+</html>

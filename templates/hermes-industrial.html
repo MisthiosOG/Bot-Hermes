@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Gateway — Industrial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',-apple-system,sans-serif;background:#0f0f11;color:#e3e3e5;
+  line-height:1.55;min-height:100vh;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(245,158,11,.2);color:#fff}
+
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px;width:100%}
+
+/* ── Topbar ── */
+.topbar{
+  border-bottom:1px solid #222;height:56px;
+  display:flex;align-items:center;position:sticky;top:0;
+  background:rgba(15,15,17,.92);backdrop-filter:blur(10px);z-index:50;
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px;color:#e3e3e5}
+.logo .mark{width:6px;height:20px;background:#f59e0b;display:block;border-radius:1px}
+.tabs{display:flex;gap:0}
+.tab{
+  padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;
+  color:#555;border:none;background:transparent;font-family:'Inter',sans-serif;
+  position:relative;transition:color .2s;
+}
+.tab:hover{color:#999}
+.tab.active{color:#f59e0b}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:16px;right:16px;height:2px;background:#f59e0b}
+.btn-top{
+  padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;
+  background:#f59e0b;color:#0f0f11;border:none;border-radius:3px;
+  font-family:'Inter',sans-serif;transition:opacity .2s;
+}
+.btn-top:hover{opacity:.85}
+
+/* ── Page ── */
+.page{flex:1;padding:48px 0 24px}
+.tab-pane{display:none}
+.tab-pane.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Hero ── */
+.hero{padding:32px 0 40px;max-width:720px}
+.hero .badge{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid #222;padding:4px 12px;font-size:11px;font-weight:500;
+  color:#777;text-transform:uppercase;letter-spacing:.8px;margin-bottom:20px;
+}
+.hero .badge .dot{width:5px;height:5px;border-radius:50%;background:#f59e0b}
+.hero h1{font-size:52px;font-weight:800;letter-spacing:-1.6px;line-height:1.05;color:#fff;margin-bottom:14px}
+.hero h1 .hl{color:#f59e0b}
+.hero .sub{color:#666;font-size:16px;max-width:520px;line-height:1.65;margin-bottom:28px}
+
+.btn-prim{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 28px;
+  background:#f59e0b;color:#0f0f11;border:none;border-radius:3px;
+  font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:opacity .2s;
+}
+.btn-prim:hover{opacity:.85}
+.btn-prim svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+/* ── Features grid ── */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:40px;border-top:1px solid #222;border-left:1px solid #222}
+.feature-cell{padding:24px;border-right:1px solid #222;border-bottom:1px solid #222}
+.feature-cell .label{font-size:11px;font-weight:600;color:#f59e0b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.feature-cell h3{font-size:14px;font-weight:600;color:#fff;margin-bottom:4px}
+.feature-cell p{font-size:13px;color:#555;line-height:1.55}
+@media(max-width:720px){.features-grid{grid-template-columns:1fr}}
+
+/* ── Order form ── */
+.order-section{max-width:500px;margin:0 auto;padding:0 0 20px}
+.order-section .price-block{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #222}
+.order-section .price-block .amt{font-size:42px;font-weight:800;color:#fff;letter-spacing:-1.5px}
+.order-section .price-block .amt small{font-size:14px;font-weight:500;color:#555}
+.order-section .price-block .note{font-size:13px;color:#555;margin-top:4px}
+
+.order-card{background:#111113;border:1px solid #222;border-radius:4px;padding:28px}
+.order-card h2{font-size:17px;font-weight:700;color:#fff;margin-bottom:3px}
+.order-card .desc{color:#555;font-size:13px;margin-bottom:20px}
+.step-dots{display:flex;gap:6px;margin-bottom:24px}
+.step-dots span{flex:1;height:3px;background:#222;border-radius:2px;transition:background .25s}
+.step-dots span.active{background:#f59e0b}
+.step{display:none}
+.step.active{display:block}
+.step label{font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.step input,.step .file-area{
+  width:100%;padding:11px 14px;background:#0a0a0c;border:1px solid #222;
+  color:#e3e3e5;font-size:14px;margin-bottom:14px;font-family:'Inter',sans-serif;border-radius:3px;
+  transition:border-color .2s;
+}
+.step input:focus{outline:none;border-color:#f59e0b}
+.gopay-box{background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);border-radius:4px;padding:16px;text-align:center;margin-bottom:16px}
+.gopay-box .lbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.8px}
+.gopay-box .num{font-size:20px;font-weight:700;letter-spacing:1.5px;color:#f59e0b;margin:6px 0;font-family:'JetBrains Mono',monospace}
+.up-area input{display:none}
+.up-area{
+  border:1px dashed #333;border-radius:4px;text-align:center;
+  padding:24px 20px;cursor:pointer;transition:border-color .25s,background .25s;margin-bottom:14px;
+}
+.up-area:hover{border-color:#444;background:rgba(255,255,255,.02)}
+.up-area .up-icon svg{width:28px;height:28px;stroke:#444;fill:none;stroke-width:1.5}
+.up-area .up-txt{color:#555;font-size:13px;margin-top:8px}
+.up-area .up-txt span{color:#888}
+.up-area.has{border-color:#f59e0b;border-style:solid;background:rgba(245,158,11,.03)}
+.up-area.has .up-icon svg{stroke:#f59e0b}
+.up-area.has .up-txt{color:#f59e0b}
+
+.btn-sec{
+  width:100%;padding:11px;border-radius:3px;font-size:13px;font-weight:600;cursor:pointer;
+  border:1px solid #222;color:#777;background:transparent;
+  font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;
+}
+.btn-sec:hover{color:#e3e3e5;border-color:#444}
+.btn-prim.full{width:100%;margin-top:10px;justify-content:center}
+
+.note-bot{font-size:12px;color:#444;margin-top:14px;text-align:center}
+.note-bot code{background:#111;border:1px solid #222;padding:2px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px}
+
+/* ── Invoice ── */
+.proc-wrap{max-width:580px;margin:0 auto}
+.status-card{background:#111113;border:1px solid #222;border-radius:4px;padding:48px 28px;text-align:center}
+.status-card .indicator{width:32px;height:32px;border:2px solid #222;border-top-color:#f59e0b;margin:0 auto 20px;border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status-card h2{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.status-card p{color:#555;font-size:13px}
+
+.invoice-wrap{display:none}
+.invoice-wrap.show{display:block;animation:fadeIn .4s ease}
+.invoice-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.invoice-header .check{width:44px;height:44px;border-radius:50%;background:rgba(245,158,11,.1);display:flex;align-items:center;justify-content:center}
+.invoice-header .check svg{width:22px;height:22px;stroke:#f59e0b;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.invoice-header h2{font-size:20px;font-weight:700;color:#fff}
+.invoice-header p{font-size:12px;color:#555}
+
+.invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:20px;border:1px solid #222}
+.invoice-grid .box{padding:14px 16px;background:#111113}
+.invoice-grid .box .lbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.invoice-grid .box .val{font-family:'JetBrains Mono',monospace;font-size:12px;word-break:break-all}
+.invoice-grid .box .val.acc{color:#f59e0b}
+
+.guide-card{background:#111113;border:1px solid #222;border-radius:4px;padding:20px;margin-bottom:20px}
+.guide-card h4{font-size:12px;font-weight:700;color:#f59e0b;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.guide-card ol{list-style:none}
+.guide-card li{padding:6px 0;font-size:13px;color:#666;counter-increment:g}
+.guide-card li::before{content:counter(g)'. ';color:#f59e0b;font-weight:600}
+.guide-card ol{counter-reset:g}
+
+.summary{display:flex;justify-content:space-between;padding:14px 0;border-top:1px solid #222;margin-bottom:20px;font-size:13px}
+.summary .k{color:#555}
+.summary .v{color:#fff;font-weight:600}
+
+.btn-copy{
+  width:100%;padding:11px;border-radius:3px;font-size:13px;font-weight:600;cursor:pointer;
+  background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:#f59e0b;
+  font-family:'Inter',sans-serif;transition:background .2s;
+}
+.btn-copy:hover{background:rgba(245,158,11,.14)}
+
+/* ── Cara Kerja ── */
+.workflow{max-width:660px;margin:0 auto}
+.wf-step{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid #18181a}
+.wf-step:last-child{border-bottom:none}
+.wf-step .num{width:32px;height:32px;border:1px solid #222;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#f59e0b;flex-shrink:0;margin-top:2px}
+.wf-step .body h3{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px}
+.wf-step .body p{font-size:13px;color:#555;line-height:1.55}
+.wf-step .body .tag{display:inline-block;margin-top:6px;font-size:11px;color:#777;border:1px solid #222;padding:2px 10px;border-radius:3px}
+
+/* ── FAQ ── */
+.faq-wrap{max-width:680px;margin:0 auto}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:1px solid #222;margin-bottom:28px}
+details.faq-card{background:#111113;padding:0}
+details.faq-card summary{
+  cursor:pointer;padding:14px 18px;font-size:13px;font-weight:500;color:#e3e3e5;
+  list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  transition:background .2s;
+}
+details.faq-card summary:hover{background:rgba(255,255,255,.02)}
+details.faq-card summary .ico{width:16px;height:16px;stroke:#444;fill:none;stroke-width:2;flex-shrink:0;transition:stroke .2s}
+details.faq-card[open] summary .ico{stroke:#f59e0b}
+details.faq-card .ans{padding:0 18px 14px;font-size:13px;color:#555;line-height:1.65}
+details.faq-card[open] summary{border-bottom:1px solid #222}
+details.faq-card{border-bottom:1px solid #18181a}
+details.faq-card:last-child{border-bottom:none}
+.faq-grid details.faq-card:nth-last-child(-n+2):last-child{border-bottom:none}
+@media(max-width:640px){.faq-grid{grid-template-columns:1fr}}
+
+.faq-contact{border:1px solid #222;border-radius:4px;padding:28px;text-align:center;background:#111113}
+.faq-contact h4{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
+.faq-contact p{font-size:13px;color:#555;margin-bottom:14px}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:3px;
+  background:transparent;border:1px solid #222;color:#777;
+  font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;
+  font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;
+}
+.btn-ghost:hover{color:#e3e3e5;border-color:#444}
+
+footer{border-top:1px solid #18181a;padding:28px 0;text-align:center;color:#333;font-size:12px}
+
+/* ── Toast ── */
+.toast{position:fixed;top:20px;right:20px;z-index:999;max-width:360px;transform:translateX(120%);transition:transform .3s ease,opacity .3s;opacity:0}
+.toast.show{transform:translateX(0);opacity:1}
+.toast-inner{background:#18181b;border:1px solid #222;border-radius:4px;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.toast-inner .t-icon{width:18px;height:18px;flex-shrink:0}
+.toast-inner .t-icon.err{stroke:#ef4444;fill:none;stroke-width:2}
+.toast-inner .t-icon.ok{stroke:#f59e0b;fill:none;stroke-width:2}
+.toast-inner .t-msg{font-size:13px;color:#e3e3e5}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:640px){
+  .hero h1{font-size:32px}
+  .topbar .tabs{gap:0}.tab{padding:6px 10px;font-size:12px}
+  .invoice-grid{grid-template-columns:1fr}.order-card{padding:20px}
+  .wrap{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="wrap">
+    <div class="logo"><span class="mark"></span>Hermes Gateway</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="beranda">Beranda</button>
+      <button class="tab" data-tab="harga">Harga</button>
+      <button class="tab" data-tab="invoice" id="tabInvBtn" style="display:none">Pesanan</button>
+      <button class="tab" data-tab="cara-kerja">Cara Kerja</button>
+      <button class="tab" data-tab="faq">FAQ</button>
+    </div>
+    <button class="btn-top" onclick="switchTab('harga')">Order</button>
+  </div>
+</nav>
+
+<div class="page"><div class="wrap">
+
+<!-- ═══ Beranda ═══ -->
+<section class="tab-pane active" id="tab-beranda">
+  <div class="hero">
+    <div class="badge"><span class="dot"></span>Self-hosted infrastructure</div>
+    <h1>AI agent pribadi,<br><span class="hl">infrastructure kamu sendiri.</span></h1>
+    <p class="sub">Panel admin, SSH root, multi-provider LLM, Telegram & Discord — semua di VPS kamu. Bukan SaaS, bukan share-account.</p>
+    <button class="btn-prim" onclick="switchTab('harga')"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Mulai Sekarang</button>
+  </div>
+  <div class="features-grid">
+    <div class="feature-cell"><div class="label">Panel</div><h3>Admin Dashboard</h3><p>Kelola provider LLM, channel, tools, settings — semua dari browser.</p></div>
+    <div class="feature-cell"><div class="label">Akses</div><h3>SSH Root</h3><p>Akses penuh server dengan password custom. Beneran root.</p></div>
+    <div class="feature-cell"><div class="label">LLM</div><h3>20+ Provider</h3><p>OpenRouter, Anthropic, DeepSeek, Gemini, Grok — pilih dan ganti kapan aja.</p></div>
+    <div class="feature-cell"><div class="label">Channel</div><h3>Multi-Channel</h3><p>Telegram, Discord, WhatsApp — satu agent, semua platform.</p></div>
+    <div class="feature-cell"><div class="label">Deploy</div><h3>Auto-Deploy</h3><p>1 order = akun + panel + domain. 3 menit selesai.</p></div>
+    <div class="feature-cell"><div class="label">Reliability</div><h3>Auto-Restart</h3><p>Backup & restore + auto-restart. Agent jalan 24/7 tanpa turun.</p></div>
+  </div>
+</section>
+
+<!-- ═══ Harga ═══ -->
+<section class="tab-pane" id="tab-harga">
+  <div class="order-section">
+    <div class="price-block">
+      <div class="amt">Rp 50.000 <small>/ bulan</small></div>
+      <div class="note">Self-hosted AI agent. Bayar bulanan, kontrol penuh. Cancel kapan aja.</div>
+    </div>
+    <div class="order-card">
+      <div class="step-dots"><span class="active" id="dot1"></span><span id="dot2"></span><span id="dot3"></span></div>
+      <div class="step active" id="step1">
+        <h2>Data diri</h2>
+        <p class="desc">Isi nama dan username Telegram kamu</p>
+        <label>Nama</label><input id="name" type="text" placeholder="Nama kamu">
+        <label>Username Telegram</label><input id="telegram" type="text" placeholder="@username">
+        <button class="btn-prim full" onclick="nextStep()">Lanjut</button>
+      </div>
+      <div class="step" id="step2">
+        <h2>Pembayaran</h2>
+        <p class="desc">Transfer Rp 50.000 ke GoPay, upload buktinya</p>
+        <div class="gopay-box"><div class="lbl">GoPay</div><div class="num">0881022218911</div></div>
+        <label>Upload bukti transfer</label>
+        <div class="up-area" id="fileArea" onclick="document.getElementById('photo').click()">
+          <input type="file" id="photo" accept="image/*" capture="environment" onchange="fileChosen(this)">
+          <div class="up-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="up-txt" id="fileTxt">Klik untuk upload <span>foto bukti TF</span></div>
+        </div>
+        <button class="btn-sec" onclick="prevStep()">Kembali</button>
+        <button class="btn-prim full" onclick="submitOrder()">Kirim Pesanan</button>
+      </div>
+      <div class="step" id="step3">
+        <h2>Pesanan dikirim</h2>
+        <p class="desc">Tunggu admin proses pesanan kamu</p>
+        <p style="color:#555;font-size:13px;margin-top:12px">Kredensial muncul di tab <strong style="color:#e3e3e5">Pesanan</strong> + dikirim ke Telegram setelah disetujui.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Invoice ═══ -->
+<section class="tab-pane" id="tab-invoice">
+  <div class="proc-wrap">
+    <div class="status-card" id="procStatus">
+      <div class="indicator"></div>
+      <h2>Memproses Pesanan</h2>
+      <p>Pesanan sedang diproses. Biasanya 1-3 menit.</p>
+    </div>
+    <div class="invoice-wrap" id="invWrap">
+      <div class="invoice-header">
+        <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div><h2>Pesanan Selesai</h2><p id="invBuyer">Atas nama: —</p></div>
+      </div>
+      <div class="invoice-grid">
+        <div class="box"><div class="lbl">URL Panel</div><div class="val acc" id="invUrl">—</div></div>
+        <div class="box"><div class="lbl">Username</div><div class="val" id="invUser">admin</div></div>
+        <div class="box"><div class="lbl">Password</div><div class="val" id="invPass">—</div></div>
+        <div class="box"><div class="lbl">SSH Password</div><div class="val" id="invSsh">—</div></div>
+      </div>
+      <div class="guide-card">
+        <h4>Cara Pakai</h4>
+        <ol>
+          <li>Buka URL panel di browser kamu</li>
+          <li>Login dengan username &amp; password di atas</li>
+          <li>Tambah provider LLM (OpenRouter, Anthropic, dll)</li>
+          <li>Hubungkan channel Telegram / Discord / WhatsApp</li>
+          <li>Agent AI kamu siap digunakan</li>
+        </ol>
+      </div>
+      <div class="summary"><span class="k">Paket</span><span class="v">Hermes Gateway — Rp 50.000/bln</span></div>
+      <button class="btn-copy" onclick="copyAll()">Salin Semua Kredensial</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Cara Kerja ═══ -->
+<section class="tab-pane" id="tab-cara-kerja">
+  <div class="workflow">
+    <div class="wf-step"><div class="num">1</div><div class="body"><h3>Order &amp; Bayar</h3><p>Isi data diri, transfer sesuai nominal ke GoPay, upload bukti pembayaran.</p><span class="tag">~2 menit</span></div></div>
+    <div class="wf-step"><div class="num">2</div><div class="body"><h3>Verifikasi Admin</h3><p>Admin terima notifikasi bukti TF via Telegram, cek, lalu approve.</p><span class="tag">Manual</span></div></div>
+    <div class="wf-step"><div class="num">3</div><div class="body"><h3>Auto-Deploy</h3><p>Sistem otomatis bikin akun Railway, deploy panel Hermes, generate domain publik.</p><span class="tag">~2 menit</span></div></div>
+    <div class="wf-step"><div class="num">4</div><div class="body"><h3>Terima &amp; Gunakan</h3><p>Kredensial dikirim ke Telegram + muncul di tab Pesanan. Login, isi API key, agent siap.</p><span class="tag">Langsung</span></div></div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="tab-pane" id="tab-faq">
+  <div class="faq-wrap">
+    <div class="faq-grid">
+      <details class="faq-card"><summary>Berapa lama setup-nya?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">1-3 menit setelah pembayaran diverifikasi. Sistem otomatis — bikin akun Railway, deploy panel, generate domain.</div></details>
+      <details class="faq-card"><summary>API key LLM dari mana?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Kamu isi sendiri di dashboard. Bisa OpenRouter (gratis beberapa model), Anthropic, DeepSeek, Gemini, Grok, dan 20+ lainnya.</div></details>
+      <details class="faq-card"><summary>Ini VPS bukan?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Bukan VPS biasa — panel AI agent self-hosted. Dapat admin dashboard + SSH root access ke instance Railway.</div></details>
+      <details class="faq-card"><summary>Kredensial dikirim ke mana?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Telegram kamu (pastikan udah <code style="background:#111;border:1px solid #222;padding:1px 5px;font-size:12px">/start</code> bot) + tab Pesanan di sini.</div></details>
+      <details class="faq-card"><summary>Bisa ganti password?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Bisa. Login ke panel admin, buka Settings, ada opsi ganti password admin &amp; SSH.</div></details>
+      <details class="faq-card"><summary>Ada masalah?<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></summary><div class="ans">Hubungi admin via Telegram. Garansi setup berhasil atau refund.</div></details>
+    </div>
+    <div class="faq-contact">
+      <h4>Masih punya pertanyaan?</h4>
+      <p>Hubungi admin langsung via Telegram</p>
+      <a href="https://t.me/hermesadmin" class="btn-ghost" target="_blank">Chat Admin</a>
+    </div>
+  </div>
+</section>
+
+</div></div>
+
+<div class="toast" id="toast"><div class="toast-inner"><svg class="t-icon" id="toastIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg><span class="t-msg" id="toastMsg"></span></div></div>
+<footer>Hermes Gateway · Self-hosted AI agent · 2026</footer>
+
+<script>
+let currentStep=1,_jobId=null,_toastTimer=null;
+function toast(msg,isErr=true){
+  const t=document.getElementById('toast'),icon=document.getElementById('toastIcon'),m=document.getElementById('toastMsg');
+  m.textContent=msg;icon.setAttribute('class','t-icon '+(isErr?'err':'ok'));
+  icon.innerHTML=isErr?'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>':'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+  t.classList.add('show');clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function switchTab(name){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const tb=document.querySelector(`.tab[data-tab="${name}"]`);
+  if(tb)tb.classList.add('active');
+}
+document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>switchTab(t.dataset.tab))});
+function nextStep(){
+  if(!document.getElementById('telegram').value.trim()){toast('Isi username Telegram dulu');return}
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('dot1').classList.remove('active');
+  document.getElementById('dot2').classList.add('active');currentStep=2;
+}
+function prevStep(){
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('dot2').classList.remove('active');
+  document.getElementById('dot1').classList.add('active');currentStep=1;
+}
+function fileChosen(i){
+  const a=document.getElementById('fileArea'),t=document.getElementById('fileTxt');
+  if(i.files&&i.files[0]){a.classList.add('has');t.innerHTML='<span>'+i.files[0].name+'</span>'}
+}
+async function submitOrder(){
+  const name=document.getElementById('name').value.trim(),tg=document.getElementById('telegram').value.trim(),photo=document.getElementById('photo').files[0];
+  if(!tg){toast('Isi username Telegram');return}
+  if(!photo){toast('Upload bukti transfer dulu');return}
+  const fd=new FormData();fd.append('name',name);fd.append('telegram',tg);fd.append('payment_photo',photo);
+  try{const res=await fetch('/api/order',{method:'POST',body:fd});const d=await res.json();_jobId=d.job_id;switchTab('invoice');pollInvoice(d.job_id)}catch(e){toast('Gagal: '+e.message)}
+}
+async function pollInvoice(jobId){
+  for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,5000));
+    try{const res=await fetch('/api/order/'+jobId);const job=await res.json();
+      if(job.status==='ready'||job.status==='deployed_no_url'){showInvoice(job);return}
+      if(job.status==='failed'){document.querySelector('#procStatus h2').textContent='Gagal, hubungi admin';return}
+    }catch(e){}}
+  document.querySelector('#procStatus h2').textContent='Terlalu lama, hubungi admin';
+}
+function showInvoice(job){
+  const o=job.order||{};
+  document.getElementById('invUrl').textContent=o.url||'—';
+  document.getElementById('invUser').textContent=o.admin_username||'admin';
+  document.getElementById('invPass').textContent=o.admin_password||'—';
+  document.getElementById('invSsh').textContent=o.ssh_password||'—';
+  document.getElementById('invBuyer').textContent='Atas nama: '+(job.buyer?.name||'—');
+  document.getElementById('procStatus').style.display='none';
+  document.getElementById('invWrap').classList.add('show');
+  document.getElementById('tabInvBtn').style.display='inline-block';
+}
+function copyAll(){
+  const t='URL: '+document.getElementById('invUrl').textContent+'\nUser: '+document.getElementById('invUser').textContent+'\nPass: '+document.getElementById('invPass').textContent+'\nSSH:  '+document.getElementById('invSsh').textContent;
+  navigator.clipboard.writeText(t).then(()=>{const b=document.querySelector('.btn-copy');b.textContent='Tersalin!';setTimeout(()=>b.textContent='Salin Semua Kredensial',2000)});
+}
+</script>
+</body>
+</html>
