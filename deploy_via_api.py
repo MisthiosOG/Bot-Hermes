@@ -465,6 +465,7 @@ def create_order():
                 raise RuntimeError(f"deploy {name} gagal: {r[:300]}")
             # env locked: cek apakah build sebenarnya udah jalan sendiri (auto-deploy dari patch)
             st = _dep_status(p, svid)
+            print(f"    deploy {name}: locked; dep_status({name})={st}; raw_deploy_err={r[-200:]}")
             if st in ACTIVE:
                 print(f"    deploy {name}: build {name} udah jalan otomatis ({st}) — tinggal tunggu")
                 kicked = True
