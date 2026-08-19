@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Probe langka: login via OTP ke akun order, dump deployment state, test
-interval = 1 environmentPatchCommit (3 services) → apakah auto-deploy jalan?
-JANGAN dipake production, cuma probe. Hasil dikirim balik sebagai JSON."""
+"""Probe v2: di akun order yang env-nya udah quiet (hermes SUCCESS, router/terminal
+belum pernah deploy), coba serviceInstanceDeploy langsung ke router.
+Tujuan: jawab kenapa deploy router selama ini "Not Authorized" terus."""
 import sys, os, re, time, json
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -19,12 +19,11 @@ def _extract_newest(r):
 
 
 def run(order):
-    """order: dict dengan email, mail_token, service_id, router_service_id,
-    terminal_service_id, environment_id, project_id."""
-    out = {"steps": []}
     svc_map = {"hermes": order["service_id"],
                "router": order.get("router_service_id"),
                "terminal": order.get("terminal_service_id")}
+    eid = order["environment_id"]
+    out = {"steps": [], "kicks": []}
 
     p = dep.make_browser()
     try:
@@ -32,8 +31,8 @@ def run(order):
         time.sleep(3)
         dep.inject_stealth(p)
         did = dep.login_and_exchange(p, order["email"], order["mail_token"])
-        out["steps"].append(("did", "ok" if did else "gagal"))
         if not did:
+            out["steps"].append(("did", "gagal"))
             return out
         from solver import MuaraicaptchaSolver
         solver = MuaraicaptchaSolver(api_key=dep.MUARAI_KEY)
@@ -63,27 +62,46 @@ def run(order):
         if "200" not in str(st):
             return out
 
-        # 1) dump pre-state
+        # state awal
         pre = {n: _extract_newest(dep.gql(p, dep.SVC_STATUS_QUERY, {"id": s})) for n, s in svc_map.items() if s}
         out["pre_state"] = pre
 
-        # 3) patch just one missing service... hmm, actually first: try deploy suci via PATCH_MUT
-        patch_payload = {s: {"isCreated": True, "source": {"image": img}}
-                         for img, s in [(dep.IMAGE_NAME, svc_map["hermes"]),
-                                         (dep.ROUTER_IMAGE, svc_map["router"]),
-                                         (dep.TERMINAL_IMAGE, svc_map["terminal"])] if s}
-        r = dep.gql(p, """
-        mutation environmentPatchCommit($environmentId: String!, $patch: EnvironmentConfig!, $message: String) {
-          environmentPatchCommit(environmentId: $environmentId, patch: $patch, commitMessage: $message)
-        }
-        """, {"environmentId": order["environment_id"], "patch": {"services": patch_payload}, "message": "probe patch"})
-        out["patch_all"] = r[:300]
+        # dump service router lengkap (source/isCreated/config)
+        r = dep.gql(p, 'query service($id: String!) { service(id: $id) { id name serviceInstances { environment { id } isCreated } } }', {"id": svc_map["router"]})
+        out["router_instances"] = r[:800]
 
-        # 4) poll 4 menit
-        for i in range(16):
+        DEPLOY_MUT = """
+        mutation serviceInstanceDeploy($serviceId: String!, $environmentId: String!, $latestCommit: Boolean) {
+          serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId, latestCommit: $latestCommit)
+        }
+        """
+        # KICK 1: persis kayak code production
+        k1 = dep.gql(p, DEPLOY_MUT, {"serviceId": svc_map["router"], "environmentId": eid, "latestCommit": True})
+        out["kicks"].append(("kick1_latestCommit_true", k1[:400]))
+
+        # KICK 2: tanpa latestCommit
+        k2 = dep.gql(p, DEPLOY_MUT, {"serviceId": svc_map["router"], "environmentId": eid, "latestCommit": False})
+        out["kicks"].append(("kick2_latestCommit_false", k2[:400]))
+
+        # kalau masih error semua → coba patch dulu, langsung kick lagi
+        if '"errors"' in k1 and '"errors"' in k2:
+            r = dep.gql(p, """
+            mutation environmentPatchCommit($environmentId: String!, $patch: EnvironmentConfig!, $message: String) {
+              environmentPatchCommit(environmentId: $environmentId, patch: $patch, commitMessage: $message)
+            }
+            """, {"environmentId": eid,
+                  "patch": {"services": {svc_map["router"]: {"isCreated": True, "source": {"image": dep.ROUTER_IMAGE}}}},
+                  "message": "probe2 patch router"})
+            out["kicks"].append(("patch_router", r[:400]))
+            time.sleep(5)
+            k3 = dep.gql(p, DEPLOY_MUT, {"serviceId": svc_map["router"], "environmentId": eid, "latestCommit": True})
+            out["kicks"].append(("kick3_after_patch", k3[:400]))
+
+        # poll router 3 menit
+        for i in range(12):
             time.sleep(15)
-            state = {n: _extract_newest(dep.gql(p, dep.SVC_STATUS_QUERY, {"id": s})) for n, s in svc_map.items() if s}
-            out["steps"].append((f"poll_{i+1}", str(state)))
+            st = _extract_newest(dep.gql(p, dep.SVC_STATUS_QUERY, {"id": svc_map["router"]}))
+            out["steps"].append((f"poll_{i+1}", str(st)))
         return out
     finally:
         p.quit()
