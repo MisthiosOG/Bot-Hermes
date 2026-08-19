@@ -272,23 +272,26 @@ def poll_urls(p, order, tries=60, delay=20):
 
 SVC_STATUS_QUERY = """
 query service($id: String!) {
-  service(id: $id) { deployments(first: 3) { edges { node { status } } } }
+  service(id: $id) { deployments(first: 5) { edges { node { status createdAt } } } }
 }
 """
 
 
 def _dep_status(p, sid):
-    """Status deployment TERBARU service, atau None kalau belum ada deployment."""
+    """Status deployment TERBARU service (sort manual by createdAt — order edges gak dijamin).
+    Return None kalau belum ada deployment sama sekali."""
     r = gql(p, SVC_STATUS_QUERY, {"id": sid})
-    statuses = re.findall(r'"status"\s*:\s*"(\w+)"', r)
-    return statuses[0] if statuses else None
+    newest = (None, "")
+    for obj in re.findall(r'\{[^{}]*"status"\s*:\s*"\w+"[^{}]*\}', r):
+        s = re.search(r'"status"\s*:\s*"(\w+)"', obj)
+        c = re.search(r'"createdAt"\s*:\s*"([^"]+)"', obj)
+        if s and c and c.group(1) > newest[1]:
+            newest = (s.group(1), c.group(1))
+    return newest[0]
 
 
 def wait_deploy(p, sid, tries=80, delay=15):
-    """Poll deployment status service sampai SUCCESS/FAILED/CANCELLED.
-    Railway cuma bisa 1 build sekaligus di satu environment, jadi deploy berikutnya
-    WAJIB nunggu build sebelumnya selesai (gak boleh lanjut pas masih building).
-    Ambil status deployment TERBARU (edge pertama)."""
+    """Poll deployment status service sampai terminal (SUCCESS/FAILED/CANCELLED)."""
     for i in range(tries):
         st = _dep_status(p, sid)
         if st == "SUCCESS":
@@ -297,6 +300,17 @@ def wait_deploy(p, sid, tries=80, delay=15):
             return False
         print(f"    build {sid[:8]}: {st} ({i+1}/{tries})")
         time.sleep(delay)
+    return False
+
+
+TERMINAL = {"SUCCESS", "FAILED", "CANCELLED", "SKIPPED", "NONE", "DELETED"}
+
+
+def _env_busy(p, svids):
+    """True kalau ada build non-terminal di environment (env lagi di-lock)."""
+    for s in svids:
+        if (_dep_status(p, s) or "NONE") not in TERMINAL:
+            return True
     return False
 
 
@@ -436,47 +450,47 @@ def create_order():
         {"input": {"projectId": pid, "environmentId": eid, "serviceId": tid,
                    "name": "PORT", "value": "7681"}})
     term_pw = None  # tanpa password (auth-off fallback)
+    all_svids = [sid, rid, tid]
     seq = [("hermes", sid, IMAGE_NAME), ("router", rid, ROUTER_IMAGE), ("terminal", tid, TERMINAL_IMAGE)]
+
+    # KEY INSIGHT: environmentPatchCommit dengan isCreated=true AUTO-DEPLOY tiap service.
+    # SATU patch berisi ketiga service = Railway queue build ketiganya sendiri (kayak dashboard).
+    # Don't kick serviceInstanceDeploy manually — itu yang bikin "Not Authorized" race.
+    print("[8] patch 3 service sekaligus (auto-deploy dari patch)...")
+    patch_payload = {svid: {"isCreated": True, "source": {"image": img}}
+                     for _, svid, img in seq}
+    r = gql(p, PATCH_MUT, {"environmentId": eid,
+                           "patch": {"services": patch_payload},
+                           "message": "deploy all 3 services"})
+    print(f"    patch ALL: {r[:200]}")
+    if '"errors"' in r:
+        raise RuntimeError(f"patch ALL gagal: {r[:300]}")
+    time.sleep(5)
+
+    # Tunggu tiap service sampai build terminal; build harusnya jalan otomatis.
+    # Kalau > 8 menit benar-benar tidak ada build, coba kick serviceInstanceDeploy (fallback).
+    print("[9] tunggu build ketiga service (sequential, env 1 build sekaligus)...")
     for name, svid, img in seq:
-        r = gql(p, PATCH_MUT, {"environmentId": eid,
-                               "patch": {"services": {svid: {"isCreated": True, "source": {"image": img}}}},
-                               "message": f"deploy {name}"})
-        print(f"    patch {name}: {r[:200]}")
-        if '"errors"' in r:
-            raise RuntimeError(f"patch {name} gagal: {r[:300]}")
-        time.sleep(2)
-        # instance butuh waktu muncul setelah patch — retry deploy sampai gak "Not Authorized"
-        # (env lagi di-lock build lain). Tapi: patch isCreated kadang AUTO-TRIGGER build — kalau
-        # deployment service tsb udah jalan, gak usah kick lagi, tinggal tunggu build-nya selesai.
-        ACTIVE = {"INITIALIZING", "BUILDING", "DEPLOYING", "PENDING", "QUEUED",
-                  "PROVISIONING", "WAITING", "RETRYING", "SKIPPED"}
-        r = ""
         kicked = False
-        for d_try in range(50):
-            r = gql(p, DEPLOY_MUT, {"serviceId": svid, "environmentId": eid, "latestCommit": True})
-            if '"errors"' not in r:
-                kicked = True
-                break
-            err = r.lower()
-            retriable = ("not found" in err or "not authorized" in err or
-                         "locked" in err or "forbidden" in err or
-                         "another build" in err or "in progress" in err)
-            if not retriable:
-                raise RuntimeError(f"deploy {name} gagal: {r[:300]}")
-            # env locked: cek apakah build sebenarnya udah jalan sendiri (auto-deploy dari patch)
+        for pi in range(80):
             st = _dep_status(p, svid)
-            print(f"    deploy {name}: locked; dep_status({name})={st}; raw_deploy_err={r[-200:]}")
-            if st in ACTIVE:
-                print(f"    deploy {name}: build {name} udah jalan otomatis ({st}) — tinggal tunggu")
-                kicked = True
+            if st == "SUCCESS":
+                print(f"    build {name}: SUCCESS (poll {pi+1})")
                 break
-            print(f"    deploy {name}: env locked / instance belum ready, retry {d_try+1}/50...")
+            if st in ("FAILED", "CANCELLED"):
+                raise RuntimeError(f"deploy {name}: build {st} — hentikan")
+            if st is None and pi >= 32 and not kicked:
+                # 8 menit, Zero deployment -> kick manual
+                kz = gql(p, DEPLOY_MUT, {"serviceId": svid, "environmentId": eid, "latestCommit": True})
+                if '"errors"' not in kz:
+                    kicked = True
+                    print(f"    deploy {name}: zero-build 8 menit, manual kick OK")
+                else:
+                    print(f"    deploy {name}: manual kick rejected: {kz[-160:]}")
+            print(f"    build {name}: {st or 'NONE'} ({pi+1}/80 * 15s)")
             time.sleep(15)
-        print(f"    deploy {name}: {r[:150]}")
-        if not kicked:
-            raise RuntimeError(f"deploy {name} gagal setelah retry: {r[:300]}")
-        if not wait_deploy(p, svid):
-            raise RuntimeError(f"deploy {name}: build gagal/tidak selesai — hentikan")
+        else:
+            raise RuntimeError(f"deploy {name}: build tidak selesai dalam 20 menit")
 
     # buat domain publik buat tiap service
     print("[9] buat domain...")

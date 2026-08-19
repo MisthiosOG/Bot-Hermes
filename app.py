@@ -260,6 +260,48 @@ def health():
     return "ok"
 
 
+# ── TEMPORER probe (post-mortem deploy 3-link) — hapus kalau udah fix ──
+PROBE_FILE = os.path.join(DATA_DIR, "debug_probe_result.json")
+
+
+@app.route("/debug/probe", methods=["POST"])
+def debug_probe():
+    if request.cookies.get("admin_key") != ADMIN_KEY:
+        return jsonify({"error": "unauthorized"}), 403
+    key = request.args.get("order", "").strip()
+    try:
+        orders = json.load(open(dep.ORDERS_FILE))
+    except Exception as e:
+        return jsonify({"error": f"orders load gagal: {e}"}), 500
+    order = next((o for o in orders if key and (key in (o.get("email"), o.get("project_id")))), None)
+    if not order:
+        return jsonify({"error": "order tidak ketemu", "keys": [o.get("email") for o in orders[-5:]]}), 404
+    json.dump({"status": "running", "order": key}, open(PROBE_FILE, "w"))
+
+    def _run():
+        import probe_deploy
+        try:
+            res = probe_deploy.run(order)
+            res["status"] = "done"
+        except Exception as e:
+            import traceback
+            res = {"status": "error", "error": str(e), "trace": traceback.format_exc()[:2000]}
+        json.dump(res, open(PROBE_FILE, "w"), indent=2)
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"status": "started", "email": order.get("email")})
+
+
+@app.route("/debug/probe/result")
+def debug_probe_result():
+    if request.cookies.get("admin_key") != ADMIN_KEY:
+        return jsonify({"error": "unauthorized"}), 403
+    if not os.path.exists(PROBE_FILE):
+        return jsonify({"status": "none"})
+    return send_from_directory(DATA_DIR, "debug_probe_result.json")
+
+
+
 # Bot disabled for now — will be added as separate service later
 # def start_bot():
 #     import bot

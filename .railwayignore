@@ -9,7 +9,7 @@ session_cookies.json
 debug_*.py
 deploy_test.py
 deploy_page_*.png
-diag_*.py
+diag_order*.py
 extract_cookies.py
 find_tpl.py
 fix_session.py
